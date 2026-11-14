@@ -198,7 +198,7 @@ export async function handleRequest(
     return jsonError(502, 'network', origin);
   }
 
-  if (text.length > MAX_UPSTREAM_BODY_CHARS || text.includes(apiKey)) {
+  if (text.length > MAX_UPSTREAM_BODY_CHARS) {
     return jsonError(502, 'invalid_response', origin);
   }
 
@@ -214,10 +214,12 @@ export async function handleRequest(
     }
   }
 
-  if (containsSecret(payload, apiKey)) return jsonError(502, 'invalid_response', origin);
-
   const failure = interpretUpstream(upstream.status, payload);
   if (failure) return jsonError(failure.status, failure.code, origin);
+
+  if (text.includes(apiKey) || containsSecret(payload, apiKey)) {
+    return jsonError(502, 'invalid_response', origin);
+  }
 
   const headers = responseHeaders(origin);
   headers.set('Content-Type', 'application/json; charset=utf-8');
@@ -267,9 +269,9 @@ function hasOnlyKeys(url: URL, allowed: readonly string[]): boolean {
 
 function parseCityQuery(raw: string | null): string | null {
   if (raw === null) return null;
+  if (hasControlCharacter(raw)) return null;
   const query = raw.trim();
   if (query.length < 1 || query.length > GEOCODING_QUERY_MAX_LENGTH) return null;
-  if (hasControlCharacter(query)) return null;
   return query;
 }
 

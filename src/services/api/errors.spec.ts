@@ -23,7 +23,8 @@ describe('errorFromHttpStatus', () => {
       errorFromHttpStatus(502, { error: { code: 'network', message: 'dial appid=secret' } }).code,
     ).toBe('network');
     expect(
-      errorFromHttpStatus(502, { error: { code: 'network', message: 'dial appid=secret' } }).message,
+      errorFromHttpStatus(502, { error: { code: 'network', message: 'dial appid=secret' } })
+        .message,
     ).not.toContain('secret');
     expect(errorFromHttpStatus(502, null).code).toBe('unknown');
     expect(errorFromHttpStatus(500, { message: 'secret upstream detail' }).code).toBe('unknown');

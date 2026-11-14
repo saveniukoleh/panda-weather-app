@@ -56,6 +56,7 @@ describe('parseProxyRequest', () => {
     );
     expect(parseProxyRequest('GET', proxyUrl('/forecast?lat=1&lon=2&lang=fr')).ok).toBe(false);
     expect(parseProxyRequest('GET', proxyUrl('/geocoding?q=Kyiv&q=Lviv')).ok).toBe(false);
+    expect(parseProxyRequest('GET', proxyUrl('/geocoding?q=Kyiv%0A')).ok).toBe(false);
   });
 });
 
@@ -231,6 +232,23 @@ describe('handleRequest', () => {
     expect(limitedBody).toContain('"rate_limit"');
     expect(limitedBody).not.toContain('quota');
     expect(limitedBody).not.toContain('test-key');
+
+    const httpLimited: FetchLike = () =>
+      Promise.resolve(
+        new Response(JSON.stringify({ message: 'quota for test-key' }), { status: 429 }),
+      );
+    const httpLimitedResponse = await handleRequest(
+      new Request('https://proxy.example/forecast?lat=50&lon=30', {
+        headers: { Origin: LOCAL_ORIGIN },
+      }),
+      { OPENWEATHER_API_KEY: 'test-key' },
+      httpLimited,
+    );
+    const httpLimitedBody = await httpLimitedResponse.text();
+    expect(httpLimitedResponse.status).toBe(429);
+    expect(httpLimitedBody).toContain('"rate_limit"');
+    expect(httpLimitedBody).not.toContain('quota');
+    expect(httpLimitedBody).not.toContain('test-key');
 
     const missing: FetchLike = () =>
       Promise.resolve(

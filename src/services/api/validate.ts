@@ -58,11 +58,11 @@ export interface ForecastPayload {
 }
 
 export function assertGeocodingQuery(query: string): string {
+  if (hasControlCharacter(query)) throw new AppRequestError('invalid_request');
   const value = query.trim();
   if (value.length < 1 || value.length > GEOCODING_QUERY_MAX_LENGTH) {
     throw new AppRequestError('invalid_request');
   }
-  if (hasControlCharacter(value)) throw new AppRequestError('invalid_request');
   return value;
 }
 
