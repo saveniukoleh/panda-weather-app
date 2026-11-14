@@ -5,8 +5,8 @@
 
 - Overall status: In Progress
 - Current phase: Phase 2 — Application Architecture
-- Completed phases: 1.1, 1.2, 1.3, 2.1, 2.2
-- Active phase: None (2.3 not started)
+- Completed phases: 1.1, 1.2, 1.3, 2.1, 2.2, 2.3
+- Active phase: None (Phase 3 not started)
 
 Task statuses:
 - [ ] Not started
@@ -70,12 +70,12 @@ Task statuses:
 
 ## 2.3. Shared UI Components
 
-- [ ] 2.3.1. Create reusable buttons.
-- [ ] 2.3.2. Create loading indicators.
-- [ ] 2.3.3. Create error messages.
-- [ ] 2.3.4. Create confirmation modal.
-- [ ] 2.3.5. Create empty states.
-- [ ] 2.3.6. Verify shared component behavior.
+- [x] 2.3.1. Create reusable buttons.
+- [x] 2.3.2. Create loading indicators.
+- [x] 2.3.3. Create error messages.
+- [x] 2.3.4. Create confirmation modal.
+- [x] 2.3.5. Create empty states.
+- [x] 2.3.6. Verify shared component behavior.
 
 ---
 
@@ -383,6 +383,12 @@ Task statuses:
 - Implemented `AppLayout`, `AppHeader`, and `AppNav`, with `App.vue` composing placeholder `WeatherView` and `FavoritesView`.
 - Weather / Favorites switching uses local tab state (no Vue Router), with `role="tablist"` / `aria-selected`.
 - Shell has no Pinia, API, or weather business logic.
+
+## 2.3. Shared UI Components
+
+- Added generic `AppButton`, `LoadingIndicator`, `ErrorMessage`, `ConfirmModal`, and `EmptyState` under `src/components/common/`.
+- Covered props, events, and modal confirm/cancel (including Escape) with component tests.
+- Temporarily previewed the primitives on `WeatherView` for manual inspection; no weather or API logic.
 
 ## Decisions Log
 
