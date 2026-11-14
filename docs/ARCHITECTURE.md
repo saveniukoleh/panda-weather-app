@@ -259,6 +259,16 @@ interface WeatherForecast {
   entries: ForecastEntry[];
   daily: DailyForecast[];
 }
+
+interface TemperatureChartPoint {
+  label: string;
+  temperatureC: number;
+}
+
+interface WeatherChartDatasets {
+  currentDay: TemperatureChartPoint[];
+  dailyAverages: TemperatureChartPoint[];
+}
 ```
 
 Identity and grouping rules:
@@ -266,9 +276,13 @@ Identity and grouping rules:
 - A city is unique by `lat` and `lon`. Duplicate favorites use that pair, not the display name.
 - `localDate` is `YYYY-MM-DD` in the **city** timezone (`timezoneOffsetSeconds`), not the browser timezone.
 - Current-day chart data is the `entries` whose local calendar date is the city’s current local date.
-- Daily average temperature is the arithmetic mean of `temperatureC` for entries on that local date.
+- Daily average temperature is the arithmetic mean of `temperatureC` for entries on that local date. A local date with no entries is omitted.
+- `daily.condition` is the condition of the entry nearest 12:00 in the city offset, or `null` when none of those entries has a condition.
 - Missing optional fields are `null`. UI hides unavailable parameters instead of inventing values.
-- Units are metric (Celsius). Wind speed uses the unit returned by the metric API configuration and is labeled accordingly at implementation time.
+- Units are metric (Celsius). `windSpeed` is meters per second, the unit OpenWeatherMap returns for `units=metric`.
+- `precipitationProbability` is the provider `pop` value from 0 to 1, or `null` when the slot omits it.
+- Chart datasets are `{ label, temperatureC }` points. Current-day labels are `HH:mm` in the city offset. Daily labels are `localDate`. They are not Chart.js objects.
+- The provider timezone is a fixed seconds-east-of-UTC offset on the response, not an IANA zone. Daylight-saving rules are not applied per timestamp beyond that offset.
 
 ## 7. Weather Widget State
 
@@ -360,7 +374,7 @@ Vue components and Pinia stores do not call OpenWeatherMap or the Worker directl
 - Reads `import.meta.env.VITE_API_BASE_URL` (the Worker base URL). It does not read an OpenWeatherMap API key.
 - Calls the Worker routes in section 10.1 with `fetch` and an optional `AbortSignal`.
 - Lets abort errors propagate. Maps transport failures, HTTP errors, and malformed JSON to `AppError`.
-- Validates successful JSON before returning it. Phase 3.1 returns validated provider payloads; `WeatherForecast` normalization comes later.
+- Validates successful JSON before returning it. `weatherService` normalizes those payloads into `WeatherForecast`. Raw provider DTOs stay inside `services/api` and `services/weather`.
 - Does not return raw `Response` objects to feature code.
 
 ### 10.3. `geocodingService` — `services/weather`
@@ -373,12 +387,13 @@ Vue components and Pinia stores do not call OpenWeatherMap or the Worker directl
 
 ### 10.4. `weatherService` — `services/weather`
 
-- Calls the API client. It does not send `appid`.
+- Calls `requestCurrentWeather` and `requestForecast` together. It does not send `appid` or call OpenWeatherMap.
 - **Input:** `{ location: CityLocation; locale: LocaleCode; signal?: AbortSignal }`.
-- **Output:** `WeatherForecast` (normalized current snapshot when used, 3-hour `entries`, grouped `daily`, `timezoneOffsetSeconds`).
-- Uses the 5-day / 3-hour forecast endpoint. A separate current-weather request is allowed only if implementation confirms it is required for an accurate current snapshot.
-- Converts timestamps with the city timezone offset before grouping by local date.
-- **Throws:** `AppError`. Incomplete payloads that cannot be normalized are `invalid_response`.
+- **Output:** `WeatherForecast`. `location` is the requested `CityLocation`. `current` is the `/weather` snapshot. `entries` are 3-hour `/forecast` slots. `daily` groups those slots by city-local date.
+- Current weather is required. A forecast slot is the next 3-hour point, not the live observation, and it does not fill `WeatherSnapshot` (`feelsLikeC`, `humidity`, `windSpeed`, `pressure`).
+- `currentDayForecastEntries` and `toWeatherChartDatasets` select the city’s current local date from `entries` and return numeric chart points. They do not create a Chart.js instance.
+- Local dates add `city.timezone` seconds to the Unix timestamp and format the result with UTC calendar fields.
+- **Throws:** `AppRequestError` from the client. `AbortError` propagates. Slots with a non-finite timestamp or temperature are skipped. Optional gaps stay `null`. An empty `list` yields empty `entries`, `daily`, and chart series.
 
 ### 10.5. `locationService` — `services/geolocation`
 

@@ -5,8 +5,8 @@
 
 - Overall status: In Progress
 - Current phase: Phase 3 — OpenWeatherMap Integration
-- Completed phases: 1.1, 1.2, 1.3, 2.1, 2.2, 2.3, 3.1, 3.2
-- Active phase: None (Phase 3.3 not started)
+- Completed phases: 1.1, 1.2, 1.3, 2.1, 2.2, 2.3, 3.1, 3.2, 3.3
+- Active phase: None (Phase 3.4 not started)
 
 Task statuses:
 - [ ] Not started
@@ -101,15 +101,15 @@ Task statuses:
 
 ## 3.3. Weather Forecast Data
 
-- [ ] 3.3.1. Implement current weather retrieval if required by the selected API plan.
-- [ ] 3.3.2. Implement five-day forecast retrieval.
-- [ ] 3.3.3. Define normalized weather data models.
-- [ ] 3.3.4. Normalize timestamps and timezone information.
-- [ ] 3.3.5. Extract current-day forecast entries.
-- [ ] 3.3.6. Calculate daily average temperatures.
-- [ ] 3.3.7. Prepare chart datasets.
-- [ ] 3.3.8. Verify hourly forecast availability and granularity.
-- [ ] 3.3.9. Document the final forecast data strategy.
+- [x] 3.3.1. Implement current weather retrieval if required by the selected API plan.
+- [x] 3.3.2. Implement five-day forecast retrieval.
+- [x] 3.3.3. Define normalized weather data models.
+- [x] 3.3.4. Normalize timestamps and timezone information.
+- [x] 3.3.5. Extract current-day forecast entries.
+- [x] 3.3.6. Calculate daily average temperatures.
+- [x] 3.3.7. Prepare chart datasets.
+- [x] 3.3.8. Verify hourly forecast availability and granularity.
+- [x] 3.3.9. Document the final forecast data strategy.
 
 ## 3.4. API Reliability
 
@@ -394,7 +394,7 @@ Task statuses:
 
 - Added a Wrangler Worker that allowlists geocoding, current weather, and 5-day forecast requests. It attaches the OpenWeatherMap key on the server and returns generic JSON errors.
 - Added `src/services/api`, which calls `VITE_API_BASE_URL` with `AbortSignal`, validates JSON payloads, and maps failures to `AppError`.
-- Removed the frontend API key variable from `.env.example` and `src/vite-env.d.ts`. The Worker was not authenticated, configured with a real secret, or deployed.
+- Removed the frontend API key variable from `.env.example` and `src/vite-env.d.ts`. The Worker is deployed, and `OPENWEATHER_API_KEY` is configured as a Worker secret.
 - Added unit tests for proxy allowlisting and frontend validation/error mapping. The test suite was not executed in this phase.
 
 ## 3.2. City Geocoding
@@ -403,6 +403,14 @@ Task statuses:
 - Added `useCitySearch` with a 300ms debounce, a 2-character minimum, request cancellation, stale-response protection, and selection that pauses autocomplete until the query changes or the search is reset.
 - Empty provider results stay an empty list. Failures stay `AppError`. `AbortError` is not shown as a search error.
 - Added unit tests for the service and composable. The test suite was not executed in this phase.
+
+## 3.3. Weather Forecast Data
+
+- Added normalized weather models in `src/types/weather.ts` and `weatherService.load`, which calls the Worker `/weather` and `/forecast` routes.
+- Current conditions come from `/weather`. The 5-day forecast is 3-hour slots from `/data/2.5/forecast`, not hourly data. The Worker does not expose a hourly product.
+- Local dates add `city.timezone` seconds to each Unix timestamp and read the calendar date in UTC fields, so grouping does not use the browser timezone.
+- Daily averages use only entries that exist for that city-local date. Chart datasets are plain `{ label, temperatureC }` points, with no Chart.js instance.
+- Added unit tests for normalization, timezone grouping, current-day extraction, averages, chart datasets, and incomplete values. The test suite was not executed in this phase.
 
 ## Decisions Log
 
@@ -413,7 +421,7 @@ Task statuses:
 
 ## Issues and Risks
 
-- Cloudflare is not authenticated or deployed. The secret is not set. Production `VITE_API_BASE_URL` is unknown until the Worker URL exists.
+- The Cloudflare Worker is deployed and `OPENWEATHER_API_KEY` is configured as a Worker secret.
 - A caller that spoofs `Origin` can still use the three allowlisted routes. Add Cloudflare rate limiting before relying on the provider quota.
-- Hourly forecast access is still unverified. The proxy exposes the 5-day / 3-hour forecast and current weather only.
+- Hourly forecast data is not available. `GET /forecast` proxies the 5-day / 3-hour forecast. Current conditions use `GET /weather`.
 - The local `.env` may still contain the retired frontend key variable. Remove that variable and set `VITE_API_BASE_URL` locally. Do not commit `.env`.

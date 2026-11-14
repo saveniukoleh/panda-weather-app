@@ -110,29 +110,18 @@ Do not assume that a forecast entry is identical to real-time current weather.
 
 ## 6. Hourly Forecast Investigation
 
-The assignment requests an hourly temperature chart for the current day.
+The assignment asks for an hourly temperature chart for the current day.
 
-Before implementation:
+Verified against the deployed Worker contract:
 
-1. Verify available OpenWeatherMap API products.
-2. Verify whether the account has access to the required hourly endpoint.
-3. Verify the number of forecast hours returned.
-4. Verify subscription requirements and quotas.
-5. Compare the available API data with the assignment requirement.
+- `GET /forecast` proxies `https://api.openweathermap.org/data/2.5/forecast` only.
+- That product is a 5-day forecast in **3-hour** steps (up to 40 slots). It is not an hourly forecast.
+- The Worker has no One Call or `/data/2.5/forecast/hourly` route. Those products are not part of this API plan.
+- The rolling 5-day window can touch six local calendar dates, and the first and last of those days often contain fewer than eight slots. Days without slots are omitted.
 
-Possible implementation strategies:
+Decision: **Option B**. Charts use the actual 3-hour timestamps. Do not label those points as hourly data.
 
-### Option A: Hourly Forecast
-
-Use an endpoint that provides hourly data if it is available under the selected account plan.
-
-### Option B: Three-Hour Forecast
-
-If hourly data is unavailable, use the standard five-day forecast and display the actual three-hour forecast intervals.
-
-Do not label three-hour forecast data as hourly data.
-
-Document the final decision.
+`GET /weather` supplies the current snapshot. A 3-hour slot is not treated as the live observation.
 
 ## 7. Language Support
 
@@ -173,9 +162,9 @@ interface CityLocation {
 
 ### 9.2. Weather Data
 
-Create normalized internal weather models.
+Normalized models live in `src/types/weather.ts`: `WeatherSnapshot`, `ForecastEntry`, `DailyForecast`, `WeatherForecast`, and `WeatherChartDatasets`.
 
-Do not expose raw API response structures throughout the component tree.
+Provider payload types stay in `src/services/api/validate.ts`. Components do not import them.
 
 ### 9.3. Forecast Data
 
@@ -194,7 +183,7 @@ The assignment requests average daily temperature based on hourly forecast stati
 
 Implementation:
 
-1. Obtain forecast measurements.
+1. Obtain the available 3-hour forecast measurements. Do not invent missing slots.
 2. Convert timestamps to the target city's local time.
 3. Group entries by local calendar day.
 4. Calculate the arithmetic mean of available temperatures.
@@ -276,7 +265,7 @@ IP geolocation is approximate and must not be presented as precise GPS positioni
 
 Decisions made for the Phase 3.1 proxy:
 
-- Authentication: Worker secret `OPENWEATHER_API_KEY`. It is not configured or deployed yet.
+- Authentication: Worker secret `OPENWEATHER_API_KEY`. The Worker is deployed and the secret is configured.
 - Frontend configuration: `VITE_API_BASE_URL` only.
 - Geocoding: `GET /geocoding` proxies `https://api.openweathermap.org/geo/1.0/direct`.
 - Current weather: `GET /weather` proxies `https://api.openweathermap.org/data/2.5/weather`.
@@ -286,9 +275,12 @@ Decisions made for the Phase 3.1 proxy:
 - Browser origins: `https://saveniukoleh.github.io`, plus local `http://localhost` and `http://127.0.0.1`.
 - Wrangler is pinned to 4.86.0 because this environment uses Node.js 20.18.2. Wrangler 4.87 and newer require Node.js 22.
 
+Forecast decision:
+
+- Hourly forecast is not available on the exposed plan. The app uses the 5-day / 3-hour forecast plus the current-weather route. See section 6.
+
 Still pending:
 
-- Hourly forecast availability: pending verification in Phase 3.3. The proxy currently exposes the 5-day / 3-hour forecast, not a separate hourly product.
-- API subscription requirements: pending verification.
+- API subscription limits beyond the routes already exposed.
 - IP geolocation provider: pending selection.
 - Provider quota and optional Cloudflare rate limiting: pending. The allowlist is not a quota control; a caller that spoofs `Origin` can still reach the three routes.
