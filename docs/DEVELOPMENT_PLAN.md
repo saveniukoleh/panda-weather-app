@@ -4,9 +4,9 @@
 ## Project Status
 
 - Overall status: In Progress
-- Current phase: Phase 1 complete — next is Phase 2
-- Completed phases: 1.1, 1.2, 1.3
-- Active phase: None (Phase 2 not started)
+- Current phase: Phase 2 — Application Architecture
+- Completed phases: 1.1, 1.2, 1.3, 2.1, 2.2
+- Active phase: None (2.3 not started)
 
 Task statuses:
 - [ ] Not started
@@ -61,12 +61,12 @@ Task statuses:
 
 ## 2.2. Application Shell
 
-- [ ] 2.2.1. Create the root App component.
-- [ ] 2.2.2. Create the application layout.
-- [ ] 2.2.3. Create the header.
-- [ ] 2.2.4. Create the navigation tabs.
-- [ ] 2.2.5. Create the main content container.
-- [ ] 2.2.6. Implement tab switching.
+- [x] 2.2.1. Create the root App component.
+- [x] 2.2.2. Create the application layout.
+- [x] 2.2.3. Create the header.
+- [x] 2.2.4. Create the navigation tabs.
+- [x] 2.2.5. Create the main content container.
+- [x] 2.2.6. Implement tab switching.
 
 ## 2.3. Shared UI Components
 
@@ -377,6 +377,12 @@ Task statuses:
 - Documented module and component boundaries, normalized TypeScript models, independent widget state, favorites rules, and API service contracts in `ARCHITECTURE.md`.
 - Decided that Weather / Favorites tabs use application state rather than Vue Router.
 - Dashboard widget forecasts remain session-only; only favorite cities and settings are persisted.
+
+## 2.2. Application Shell
+
+- Implemented `AppLayout`, `AppHeader`, and `AppNav`, with `App.vue` composing placeholder `WeatherView` and `FavoritesView`.
+- Weather / Favorites switching uses local tab state (no Vue Router), with `role="tablist"` / `aria-selected`.
+- Shell has no Pinia, API, or weather business logic.
 
 ## Decisions Log
 
