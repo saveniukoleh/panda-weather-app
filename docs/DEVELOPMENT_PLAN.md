@@ -52,12 +52,12 @@ Task statuses:
 
 ## 2.1. Core Architecture
 
-- [ ] 2.1.1. Define the main application modules.
-- [ ] 2.1.2. Define component responsibilities.
-- [ ] 2.1.3. Define application data models.
-- [ ] 2.1.4. Define widget state structure.
-- [ ] 2.1.5. Define favorites state structure.
-- [ ] 2.1.6. Define API service boundaries.
+- [x] 2.1.1. Define the main application modules.
+- [x] 2.1.2. Define component responsibilities.
+- [x] 2.1.3. Define application data models.
+- [x] 2.1.4. Define widget state structure.
+- [x] 2.1.5. Define favorites state structure.
+- [x] 2.1.6. Define API service boundaries.
 
 ## 2.2. Application Shell
 
@@ -371,6 +371,12 @@ Task statuses:
 - Added `.env.example` with `VITE_OPENWEATHER_API_KEY` and typed it in `src/vite-env.d.ts`. No real key was added.
 - Replaced the template stylesheet with a baseline global CSS file and kept `main.ts` as a minimal Vue mount.
 - Verified type-check, lint, format, tests, production build, and the development server.
+
+## 2.1. Core Architecture
+
+- Documented module and component boundaries, normalized TypeScript models, independent widget state, favorites rules, and API service contracts in `ARCHITECTURE.md`.
+- Decided that Weather / Favorites tabs use application state rather than Vue Router.
+- Dashboard widget forecasts remain session-only; only favorite cities and settings are persisted.
 
 ## Decisions Log
 
