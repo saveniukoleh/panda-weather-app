@@ -363,13 +363,13 @@ Vue components and Pinia stores do not call OpenWeatherMap or the Worker directl
 - Validates successful JSON before returning it. Phase 3.1 returns validated provider payloads; `WeatherForecast` normalization comes later.
 - Does not return raw `Response` objects to feature code.
 
-### 10.3. `geocodingService` — `services/weather` or `services/api`
+### 10.3. `geocodingService` — `services/weather`
 
-- Calls the API client. It does not send `appid`.
-- **Input:** `{ query: string; limit: number; signal?: AbortSignal }`.
-- **Output:** `CityLocation[]` (empty array when the provider has no matches).
-- **Throws:** `AppError` for transport and HTTP failures.
-- Debouncing and ignoring outdated responses are composable/widget concerns, not the HTTP client.
+- Calls `requestGeocoding`. It does not send `appid` or repeat payload validation.
+- **Input:** `{ query: string; limit?: number; signal?: AbortSignal }`.
+- **Output:** `CityLocation[]`. An empty provider result is `[]`, not an error.
+- **Throws:** `AppRequestError` for transport and HTTP failures. `AbortError` propagates unchanged.
+- `useCitySearch` debounces for 300ms, skips queries shorter than 2 characters after trimming, cancels the previous request, and ignores stale responses. A selected city stops further requests until the query changes or the search is reset.
 
 ### 10.4. `weatherService` — `services/weather`
 

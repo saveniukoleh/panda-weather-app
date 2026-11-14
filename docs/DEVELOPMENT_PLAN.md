@@ -5,8 +5,8 @@
 
 - Overall status: In Progress
 - Current phase: Phase 3 — OpenWeatherMap Integration
-- Completed phases: 1.1, 1.2, 1.3, 2.1, 2.2, 2.3, 3.1
-- Active phase: None (Phase 3.2 not started)
+- Completed phases: 1.1, 1.2, 1.3, 2.1, 2.2, 2.3, 3.1, 3.2
+- Active phase: None (Phase 3.3 not started)
 
 Task statuses:
 - [ ] Not started
@@ -91,13 +91,13 @@ Task statuses:
 
 ## 3.2. City Geocoding
 
-- [ ] 3.2.1. Implement city search requests.
-- [ ] 3.2.2. Define the city location data model.
-- [ ] 3.2.3. Implement autocomplete request debouncing.
-- [ ] 3.2.4. Implement search result selection.
-- [ ] 3.2.5. Handle empty search results.
-- [ ] 3.2.6. Handle failed search requests.
-- [ ] 3.2.7. Handle outdated autocomplete responses.
+- [x] 3.2.1. Implement city search requests.
+- [x] 3.2.2. Define the city location data model.
+- [x] 3.2.3. Implement autocomplete request debouncing.
+- [x] 3.2.4. Implement search result selection.
+- [x] 3.2.5. Handle empty search results.
+- [x] 3.2.6. Handle failed search requests.
+- [x] 3.2.7. Handle outdated autocomplete responses.
 
 ## 3.3. Weather Forecast Data
 
@@ -396,6 +396,13 @@ Task statuses:
 - Added `src/services/api`, which calls `VITE_API_BASE_URL` with `AbortSignal`, validates JSON payloads, and maps failures to `AppError`.
 - Removed the frontend API key variable from `.env.example` and `src/vite-env.d.ts`. The Worker was not authenticated, configured with a real secret, or deployed.
 - Added unit tests for proxy allowlisting and frontend validation/error mapping. The test suite was not executed in this phase.
+
+## 3.2. City Geocoding
+
+- Added `CityLocation` and `geocodingService.search`, which maps validated geocoding places into normalized cities.
+- Added `useCitySearch` with a 300ms debounce, a 2-character minimum, request cancellation, stale-response protection, and selection that pauses autocomplete until the query changes or the search is reset.
+- Empty provider results stay an empty list. Failures stay `AppError`. `AbortError` is not shown as a search error.
+- Added unit tests for the service and composable. The test suite was not executed in this phase.
 
 ## Decisions Log
 
