@@ -1,0 +1,10 @@
+name = "panda-weather-api"
+main = "src/index.ts"
+compatibility_date = "2025-04-01"
+
+# Comma-separated browser origins allowed in addition to local http://localhost
+# and http://127.0.0.1. The OpenWeatherMap key is not a var.
+# Set it with: npx wrangler secret put OPENWEATHER_API_KEY --config worker/wrangler.toml
+# Local Wrangler reads worker/.dev.vars (never commit that file).
+[vars]
+ALLOWED_ORIGINS = "https://saveniukoleh.github.io"

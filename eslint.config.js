@@ -5,7 +5,14 @@ import tseslint from 'typescript-eslint';
 
 export default tseslint.config(
   {
-    ignores: ['dist/**', 'coverage/**', 'node_modules/**', 'docs/**'],
+    ignores: [
+      'dist/**',
+      'coverage/**',
+      'node_modules/**',
+      'docs/**',
+      '.wrangler/**',
+      '**/.wrangler/**',
+    ],
   },
   tseslint.configs.recommended,
   ...pluginVue.configs['flat/recommended'],

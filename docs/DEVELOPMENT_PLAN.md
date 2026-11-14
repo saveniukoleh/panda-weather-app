@@ -4,9 +4,9 @@
 ## Project Status
 
 - Overall status: In Progress
-- Current phase: Phase 2 — Application Architecture
-- Completed phases: 1.1, 1.2, 1.3, 2.1, 2.2, 2.3
-- Active phase: None (Phase 3 not started)
+- Current phase: Phase 3 — OpenWeatherMap Integration
+- Completed phases: 1.1, 1.2, 1.3, 2.1, 2.2, 2.3, 3.1
+- Active phase: None (Phase 3.2 not started)
 
 Task statuses:
 - [ ] Not started
@@ -83,11 +83,11 @@ Task statuses:
 
 ## 3.1. API Configuration
 
-- [ ] 3.1.1. Configure the OpenWeatherMap API key.
-- [ ] 3.1.2. Create the API service module.
-- [ ] 3.1.3. Define API request configuration.
-- [ ] 3.1.4. Implement common response validation.
-- [ ] 3.1.5. Implement common error handling.
+- [x] 3.1.1. Configure the OpenWeatherMap API key.
+- [x] 3.1.2. Create the API service module.
+- [x] 3.1.3. Define API request configuration.
+- [x] 3.1.4. Implement common response validation.
+- [x] 3.1.5. Implement common error handling.
 
 ## 3.2. City Geocoding
 
@@ -368,7 +368,7 @@ Task statuses:
 
 - Created the initial `src/` directory structure from `ARCHITECTURE.md`, using `.gitkeep` for empty folders.
 - Removed Vite demo components and assets.
-- Added `.env.example` with `VITE_OPENWEATHER_API_KEY` and typed it in `src/vite-env.d.ts`. No real key was added.
+- Added `.env.example` and typed the public Vite variable used at the time. No real key was added. Phase 3.1 removed that frontend key variable.
 - Replaced the template stylesheet with a baseline global CSS file and kept `main.ts` as a minimal Vue mount.
 - Verified type-check, lint, format, tests, production build, and the development server.
 
@@ -390,11 +390,23 @@ Task statuses:
 - Covered props, events, and modal confirm/cancel (including Escape) with component tests.
 - Temporarily previewed the primitives on `WeatherView` for manual inspection; no weather or API logic.
 
+## 3.1. API Configuration
+
+- Added a Wrangler Worker that allowlists geocoding, current weather, and 5-day forecast requests. It attaches the OpenWeatherMap key on the server and returns generic JSON errors.
+- Added `src/services/api`, which calls `VITE_API_BASE_URL` with `AbortSignal`, validates JSON payloads, and maps failures to `AppError`.
+- Removed the frontend API key variable from `.env.example` and `src/vite-env.d.ts`. The Worker was not authenticated, configured with a real secret, or deployed.
+- Added unit tests for proxy allowlisting and frontend validation/error mapping. The test suite was not executed in this phase.
+
 ## Decisions Log
 
 - Vue Router was not installed. Architecture treats routing as optional, and the current shell does not require it.
 - Vite 6 was selected instead of the current Vite 8 template default because the local Node.js version is 20.18.2. Vite 8 requires Node `^20.19.0 || >=22.12.0`.
+- OpenWeatherMap is reached only through the Cloudflare Worker. Wrangler is pinned to 4.86.0 because Wrangler 4.87+ requires Node.js 22, and the local runtime is Node.js 20.18.2.
+- The frontend stores the Worker base URL in `VITE_API_BASE_URL`. The provider key is the Worker secret `OPENWEATHER_API_KEY`.
 
 ## Issues and Risks
 
-Record unresolved technical issues, API limitations, and implementation risks here.
+- Cloudflare is not authenticated or deployed. The secret is not set. Production `VITE_API_BASE_URL` is unknown until the Worker URL exists.
+- A caller that spoofs `Origin` can still use the three allowlisted routes. Add Cloudflare rate limiting before relying on the provider quota.
+- Hourly forecast access is still unverified. The proxy exposes the 5-day / 3-hour forecast and current weather only.
+- The local `.env` may still contain the retired frontend key variable. Remove that variable and set `VITE_API_BASE_URL` locally. Do not commit `.env`.

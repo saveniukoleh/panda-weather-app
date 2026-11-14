@@ -15,36 +15,48 @@ https://openweathermap.org/api
 
 ## 2. API Authentication
 
-The application requires an OpenWeatherMap API key.
+The browser never calls OpenWeatherMap and never sees the API key.
 
-Store the key in an environment variable:
+The Cloudflare Worker in `worker/` adds `appid` when it calls OpenWeatherMap. The only production secret is the Wrangler secret:
 
-```env
-VITE_OPENWEATHER_API_KEY=your_api_key
+```text
+OPENWEATHER_API_KEY
 ```
 
-Do not commit `.env` files.
+Do not put that key in Vite variables, source, docs, `wrangler.toml` `[vars]`, or Git. Local Wrangler reads `worker/.dev.vars`, which is gitignored. `worker/.dev.vars.example` has an empty placeholder.
 
-Provide `.env.example` without real credentials.
+The frontend only needs the Worker base URL:
 
-Important:
-Vite environment variables prefixed with `VITE_` are exposed to the browser. The API key must not be considered secret in a frontend-only application. Use only a key intended for client-side use and review provider restrictions and quotas.
+```env
+VITE_API_BASE_URL=http://127.0.0.1:8787
+```
+
+Use the deployed `https` Worker URL for a production build. `.env.example` ships the variable empty. Do not commit `.env`.
+
+A production build rejects an `http` base URL and rejects any `openweathermap.org` host, so the client cannot be pointed at the provider.
+
+CORS allows `https://saveniukoleh.github.io`, comma-separated `ALLOWED_ORIGINS`, and local `http://localhost` or `http://127.0.0.1`. The browser must send an allowed `Origin`. CORS is not authentication: the Worker still allowlists paths, methods, and query parameters, and it refuses to forward arbitrary provider URLs.
 
 ## 3. Geocoding API
 
-Use the OpenWeatherMap Geocoding API to search for cities.
+The frontend calls the Worker:
 
-Proposed endpoint:
+```text
+GET {VITE_API_BASE_URL}/geocoding?q={query}&limit={1-5}
+```
+
+The Worker calls:
 
 ```text
 https://api.openweathermap.org/geo/1.0/direct
 ```
 
-Expected parameters:
+Client parameters:
 
-- `q`: city search query.
-- `limit`: maximum number of results.
-- `appid`: API key.
+- `q`: required city search query, 1–100 characters, no control characters.
+- `limit`: optional integer from 1 to 5. The Worker defaults it to 5.
+
+The Worker adds `appid`. Clients cannot pass `appid` or any other parameter.
 
 Use latitude and longitude from the selected result for weather requests.
 
@@ -52,22 +64,25 @@ Do not rely on deprecated built-in city-name weather lookup where coordinates ar
 
 ## 4. Weather Forecast API
 
-The five-day forecast endpoint:
+The frontend calls the Worker:
+
+```text
+GET {VITE_API_BASE_URL}/forecast?lat={lat}&lon={lon}&lang={en|uk}
+```
+
+The Worker calls:
 
 ```text
 https://api.openweathermap.org/data/2.5/forecast
 ```
 
-Required parameters:
+Client parameters:
 
-- `lat`
-- `lon`
-- `appid`
+- `lat`: required, -90 through 90.
+- `lon`: required, -180 through 180.
+- `lang`: optional `en` or `uk`.
 
-Optional parameters:
-
-- `units=metric`
-- `lang=en` or `lang=uk`
+The Worker always sends `units=metric` and `appid`. `units=imperial` and any unknown parameter are rejected.
 
 The standard 5-day forecast provides data in three-hour intervals.
 
@@ -75,13 +90,21 @@ This limitation must be considered when implementing the current-day temperature
 
 ## 5. Current Weather API
 
-Potential endpoint:
+The frontend calls the Worker:
+
+```text
+GET {VITE_API_BASE_URL}/weather?lat={lat}&lon={lon}&lang={en|uk}
+```
+
+The Worker calls:
 
 ```text
 https://api.openweathermap.org/data/2.5/weather
 ```
 
-Use it if the selected API plan and implementation strategy require a separate current weather request.
+Parameters match the forecast route. The Worker sends `units=metric` and `appid`.
+
+Phase 3.1 exposes this route so a later phase can request a current snapshot. It does not decide whether the widget must call it.
 
 Do not assume that a forecast entry is identical to real-time current weather.
 
@@ -209,14 +232,19 @@ Rules:
 
 ## 13. Error Handling
 
-Handle at least:
+The Worker returns `{ error: { code, message } }` for rejected requests and for provider failures. `message` is a fixed application string. Provider bodies are not forwarded.
 
-- HTTP 400: invalid request.
-- HTTP 401: invalid or missing API key.
-- HTTP 404: location not found.
-- HTTP 429: rate limit.
-- Network failures.
-- Unexpected response structure.
+The frontend maps those responses to `AppError`:
+
+- HTTP 400, 403, or 405: `invalid_request`.
+- HTTP 401: `unauthorized` (missing or rejected Worker credentials).
+- HTTP 404: `not_found`.
+- HTTP 429: `rate_limit`.
+- Network failures: `network`. `AbortError` propagates and is not an `AppError`.
+- Non-JSON or structurally invalid success payloads: `invalid_response`.
+- Anything else: `unknown`.
+
+A provider HTTP 200 body whose `cod` is 400, 401, 404, or 429 is treated as that error. Redirects are not followed.
 
 Do not display raw technical error messages directly to users.
 
@@ -246,12 +274,21 @@ IP geolocation is approximate and must not be presented as precise GPS positioni
 
 ## 16. Final API Decisions
 
-Record verified decisions here before implementation.
+Decisions made for the Phase 3.1 proxy:
 
-- Geocoding endpoint: Pending verification.
-- Current weather endpoint: Pending verification.
-- Forecast endpoint: Pending verification.
-- Hourly forecast availability: Pending verification.
-- API subscription requirements: Pending verification.
-- IP geolocation provider: Pending selection.
-- Request quota considerations: Pending verification.
+- Authentication: Worker secret `OPENWEATHER_API_KEY`. It is not configured or deployed yet.
+- Frontend configuration: `VITE_API_BASE_URL` only.
+- Geocoding: `GET /geocoding` proxies `https://api.openweathermap.org/geo/1.0/direct`.
+- Current weather: `GET /weather` proxies `https://api.openweathermap.org/data/2.5/weather`.
+- Forecast: `GET /forecast` proxies `https://api.openweathermap.org/data/2.5/forecast`.
+- Units: the Worker always requests `metric`.
+- Language: optional `lang=en` or `lang=uk`.
+- Browser origins: `https://saveniukoleh.github.io`, plus local `http://localhost` and `http://127.0.0.1`.
+- Wrangler is pinned to 4.86.0 because this environment uses Node.js 20.18.2. Wrangler 4.87 and newer require Node.js 22.
+
+Still pending:
+
+- Hourly forecast availability: pending verification in Phase 3.3. The proxy currently exposes the 5-day / 3-hour forecast, not a separate hourly product.
+- API subscription requirements: pending verification.
+- IP geolocation provider: pending selection.
+- Provider quota and optional Cloudflare rate limiting: pending. The allowlist is not a quota control; a caller that spoofs `Origin` can still reach the three routes.

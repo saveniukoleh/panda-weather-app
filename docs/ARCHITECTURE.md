@@ -26,6 +26,7 @@ Main goals:
 | Charts | Chart.js |
 | Localization | Vue I18n |
 | HTTP | Fetch API |
+| Weather API proxy | Cloudflare Worker (Wrangler) |
 | Testing | Vitest |
 | Styling | Native CSS |
 
@@ -74,6 +75,8 @@ src/
 ```
 
 `src/router/` is reserved. It stays unused while navigation is tab state.
+
+`worker/` is the Cloudflare Worker proxy (`worker/src`, `worker/wrangler.toml`). Vite does not bundle it. The OpenWeatherMap API key exists only as the Worker secret `OPENWEATHER_API_KEY`.
 
 Normalized types live in `src/types/`. Services must not leak raw OpenWeatherMap response types into Vue components.
 
@@ -155,12 +158,13 @@ Does not own:
 
 Owns:
 
-- HTTP access to OpenWeatherMap (and later IP geolocation).
-- Request configuration, AbortController support, and error normalization.
-- Mapping provider payloads into application data models.
+- HTTP access to the Cloudflare Worker proxy, which calls OpenWeatherMap.
+- Request configuration, AbortSignal support, response validation, and error normalization.
+- Later, mapping validated provider payloads into application data models.
 
 Does not own:
 
+- The OpenWeatherMap API key.
 - Vue component state.
 - User-facing copy (services throw typed errors; UI maps them to i18n strings).
 
@@ -340,31 +344,43 @@ Do not duplicate the same city list or the same forecast in multiple stores. Das
 
 ## 10. API Service Boundaries
 
-Vue components and Pinia stores do not call OpenWeatherMap URLs. They use services. Endpoints, query parameters, and plan limits are defined in `API_INTEGRATION.md`.
+Vue components and Pinia stores do not call OpenWeatherMap or the Worker directly. They use services. Endpoints, query parameters, and plan limits are defined in `API_INTEGRATION.md`.
 
-### 10.1. `services/api` — HTTP client
+### 10.1. Cloudflare Worker — `worker/`
 
-- Reads `import.meta.env.VITE_OPENWEATHER_API_KEY` (client-exposed Vite variable; not a server-side secret).
-- Performs `fetch` with optional `AbortSignal`.
-- Maps HTTP 400 / 401 / 404 / 429, network failures, and malformed JSON to `AppError`.
+- Holds `OPENWEATHER_API_KEY` as a Wrangler secret. The key is not a Worker var, a Vite variable, or part of the frontend bundle.
+- Accepts `GET`, plus CORS `OPTIONS`, for `/geocoding`, `/weather`, and `/forecast` only.
+- Validates query parameters, then calls the matching OpenWeatherMap URL with `appid` and `units=metric`.
+- Allows `https://saveniukoleh.github.io`, origins listed in `ALLOWED_ORIGINS`, and local `http://localhost` or `http://127.0.0.1` on any port. Other origins are rejected before a provider request.
+- CORS is only a browser control. The route and parameter allowlist is what prevents an open proxy.
+- Returns JSON. Failures use `{ error: { code, message } }` with a fixed message. Upstream error bodies, redirects, and any payload containing the API key are not returned.
+
+### 10.2. `services/api` — HTTP client
+
+- Reads `import.meta.env.VITE_API_BASE_URL` (the Worker base URL). It does not read an OpenWeatherMap API key.
+- Calls the Worker routes in section 10.1 with `fetch` and an optional `AbortSignal`.
+- Lets abort errors propagate. Maps transport failures, HTTP errors, and malformed JSON to `AppError`.
+- Validates successful JSON before returning it. Phase 3.1 returns validated provider payloads; `WeatherForecast` normalization comes later.
 - Does not return raw `Response` objects to feature code.
 
-### 10.2. `geocodingService` — `services/weather` or `services/api`
+### 10.3. `geocodingService` — `services/weather` or `services/api`
 
+- Calls the API client. It does not send `appid`.
 - **Input:** `{ query: string; limit: number; signal?: AbortSignal }`.
 - **Output:** `CityLocation[]` (empty array when the provider has no matches).
 - **Throws:** `AppError` for transport and HTTP failures.
 - Debouncing and ignoring outdated responses are composable/widget concerns, not the HTTP client.
 
-### 10.3. `weatherService` — `services/weather`
+### 10.4. `weatherService` — `services/weather`
 
+- Calls the API client. It does not send `appid`.
 - **Input:** `{ location: CityLocation; locale: LocaleCode; signal?: AbortSignal }`.
 - **Output:** `WeatherForecast` (normalized current snapshot when used, 3-hour `entries`, grouped `daily`, `timezoneOffsetSeconds`).
 - Uses the 5-day / 3-hour forecast endpoint. A separate current-weather request is allowed only if implementation confirms it is required for an accurate current snapshot.
 - Converts timestamps with the city timezone offset before grouping by local date.
 - **Throws:** `AppError`. Incomplete payloads that cannot be normalized are `invalid_response`.
 
-### 10.4. `locationService` — `services/geolocation`
+### 10.5. `locationService` — `services/geolocation`
 
 - Optional automatic location (later phase).
 - **Output:** `CityLocation` or a documented fallback city.
@@ -407,7 +423,7 @@ Use `AppError` consistently.
 | Code | Typical cause |
 | --- | --- |
 | `network` | Fetch failed (offline, DNS, abort after user-visible failure) |
-| `unauthorized` | HTTP 401 — missing or invalid API key |
+| `unauthorized` | HTTP 401 — the Worker reported that OpenWeatherMap rejected the credentials |
 | `invalid_request` | HTTP 400 |
 | `not_found` | HTTP 404 or no usable location |
 | `rate_limit` | HTTP 429 |
@@ -427,6 +443,7 @@ Do not show raw HTTP or stack messages to users. Map `AppError.code` to i18n str
 - Keep components focused.
 - Use TypeScript instead of unnecessary `any`.
 - Do not introduce additional libraries without a clear reason.
+- Do not call OpenWeatherMap from the frontend, and do not put the API key in Vite variables or source.
 
 ## 16. Architecture Evolution
 

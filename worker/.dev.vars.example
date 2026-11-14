@@ -1,0 +1,2 @@
+# Copy to worker/.dev.vars for `wrangler dev`. Do not commit worker/.dev.vars.
+OPENWEATHER_API_KEY=
