@@ -20,12 +20,12 @@ Task statuses:
 
 ## 1.1. Repository Setup
 
-- [ ] 1.1.1. Create the GitHub repository.
-- [ ] 1.1.2. Create the documentation directory.
-- [ ] 1.1.3. Add all project documentation files.
-- [ ] 1.1.4. Create the initial README.
-- [ ] 1.1.5. Create the initial .gitignore.
-- [ ] 1.1.6. Commit the initial documentation.
+- [x] 1.1.1. Create the GitHub repository.
+- [x] 1.1.2. Create the documentation directory.
+- [x] 1.1.3. Add all project documentation files.
+- [x] 1.1.4. Create the initial README.
+- [x] 1.1.5. Create the initial .gitignore.
+- [x] 1.1.6. Commit the initial documentation.
 
 ## 1.2. Development Environment
 
