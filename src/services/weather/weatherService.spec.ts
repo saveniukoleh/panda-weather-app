@@ -102,4 +102,46 @@ describe('weatherService', () => {
     forecastRequest.mockRejectedValue(aborted);
     await expect(weatherService.load({ location: kyiv, locale: 'en' })).rejects.toBe(aborted);
   });
+
+  it('does not let one city failure replace another in-flight load', async () => {
+    const lviv = { name: 'Lviv', country: 'UA', lat: 49.84, lon: 24.03 };
+    const kyivSignal = new AbortController().signal;
+    const lvivSignal = new AbortController().signal;
+
+    currentRequest.mockImplementation(async (query) => {
+      if (query.lat === kyiv.lat) throw new AppRequestError('rate_limit');
+      return { name: 'Lviv', main: { temp: 8 } };
+    });
+    forecastRequest.mockImplementation(async (query) => ({
+      city: {
+        name: query.lat === kyiv.lat ? 'Kyiv' : 'Lviv',
+        country: 'UA',
+        timezone: 7200,
+        coord: { lat: query.lat, lon: query.lon },
+      },
+      list: [
+        {
+          dt: Date.parse('2026-01-16T00:00:00Z') / 1000,
+          main: { temp: query.lat === kyiv.lat ? 1 : 9 },
+        },
+      ],
+    }));
+
+    const [failed, loaded] = await Promise.allSettled([
+      weatherService.load({ location: kyiv, locale: 'en', signal: kyivSignal }),
+      weatherService.load({ location: lviv, locale: 'uk', signal: lvivSignal }),
+    ]);
+
+    expect(currentRequest.mock.calls[0]?.[1]).toBe(kyivSignal);
+    expect(forecastRequest.mock.calls[0]?.[1]).toBe(kyivSignal);
+    expect(currentRequest.mock.calls[1]?.[1]).toBe(lvivSignal);
+    expect(forecastRequest.mock.calls[1]?.[1]).toBe(lvivSignal);
+    expect(failed).toMatchObject({ status: 'rejected', reason: { code: 'rate_limit' } });
+    expect(loaded.status).toBe('fulfilled');
+    if (loaded.status === 'fulfilled') {
+      expect(loaded.value.location).toEqual(lviv);
+      expect(loaded.value.current.temperatureC).toBe(8);
+      expect(loaded.value.entries.map((entry) => entry.temperatureC)).toEqual([9]);
+    }
+  });
 });

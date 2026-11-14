@@ -167,4 +167,123 @@ describe('handleRequest', () => {
     expect(echoedResponse.status).toBe(502);
     expect(await echoedResponse.text()).not.toContain('test-key');
   });
+
+  it('reports a missing or short key as unknown and does not call the provider', async () => {
+    let called = false;
+    const fetchImpl: FetchLike = () => {
+      called = true;
+      return Promise.reject(new Error('should not run'));
+    };
+    const response = await handleRequest(
+      new Request('https://proxy.example/weather?lat=50&lon=30', {
+        headers: { Origin: LOCAL_ORIGIN },
+      }),
+      { OPENWEATHER_API_KEY: 'short' },
+      fetchImpl,
+    );
+    const body = await response.text();
+
+    expect(called).toBe(false);
+    expect(response.status).toBe(500);
+    expect(body).toContain('"unknown"');
+    expect(body).not.toContain('short');
+    expect(body).not.toContain('OPENWEATHER_API_KEY');
+  });
+
+  it('hides provider credential, rate-limit, and not-found details', async () => {
+    const rejected: FetchLike = () =>
+      Promise.resolve(
+        new Response(
+          JSON.stringify({
+            cod: 401,
+            message: 'Invalid API key. See https://api.openweathermap.org',
+          }),
+          { status: 200 },
+        ),
+      );
+    const rejectedResponse = await handleRequest(
+      new Request('https://proxy.example/weather?lat=50&lon=30', {
+        headers: { Origin: LOCAL_ORIGIN },
+      }),
+      { OPENWEATHER_API_KEY: 'test-key' },
+      rejected,
+    );
+    const rejectedBody = await rejectedResponse.text();
+    expect(rejectedBody).toContain('"unauthorized"');
+    expect(rejectedBody).not.toContain('test-key');
+    expect(rejectedBody).not.toContain('openweathermap');
+
+    const limited: FetchLike = () =>
+      Promise.resolve(
+        new Response(JSON.stringify({ cod: '429', message: 'quota for test-key' }), {
+          status: 200,
+        }),
+      );
+    const limitedResponse = await handleRequest(
+      new Request('https://proxy.example/forecast?lat=50&lon=30', {
+        headers: { Origin: LOCAL_ORIGIN },
+      }),
+      { OPENWEATHER_API_KEY: 'test-key' },
+      limited,
+    );
+    const limitedBody = await limitedResponse.text();
+    expect(limitedResponse.status).toBe(429);
+    expect(limitedBody).toContain('"rate_limit"');
+    expect(limitedBody).not.toContain('quota');
+    expect(limitedBody).not.toContain('test-key');
+
+    const missing: FetchLike = () =>
+      Promise.resolve(
+        new Response(JSON.stringify({ cod: '404', message: 'city not found' }), { status: 404 }),
+      );
+    const missingResponse = await handleRequest(
+      new Request('https://proxy.example/weather?lat=50&lon=30', {
+        headers: { Origin: LOCAL_ORIGIN },
+      }),
+      { OPENWEATHER_API_KEY: 'test-key' },
+      missing,
+    );
+    const missingBody = await missingResponse.text();
+    expect(missingResponse.status).toBe(404);
+    expect(missingBody).toContain('"not_found"');
+    expect(missingBody).not.toContain('city not found');
+  });
+
+  it('maps an upstream connection failure to network and hides the request URL', async () => {
+    const failed: FetchLike = () =>
+      Promise.reject(
+        new Error('connect failed https://api.openweathermap.org/data/2.5/weather?appid=test-key'),
+      );
+    const response = await handleRequest(
+      new Request('https://proxy.example/weather?lat=50&lon=30', {
+        headers: { Origin: LOCAL_ORIGIN },
+      }),
+      { OPENWEATHER_API_KEY: 'test-key' },
+      failed,
+    );
+    const body = await response.text();
+
+    expect(response.status).toBe(502);
+    expect(body).toContain('"network"');
+    expect(body).not.toContain('test-key');
+    expect(body).not.toContain('openweathermap');
+    expect(body).not.toContain('connect failed');
+
+    const unread: FetchLike = () =>
+      Promise.resolve({
+        status: 200,
+        text: () => Promise.reject(new Error('hang up appid=test-key')),
+      } as Response);
+    const unreadResponse = await handleRequest(
+      new Request('https://proxy.example/forecast?lat=50&lon=30', {
+        headers: { Origin: LOCAL_ORIGIN },
+      }),
+      { OPENWEATHER_API_KEY: 'test-key' },
+      unread,
+    );
+    const unreadBody = await unreadResponse.text();
+    expect(unreadBody).toContain('"network"');
+    expect(unreadBody).not.toContain('test-key');
+    expect(unreadBody).not.toContain('hang up');
+  });
 });

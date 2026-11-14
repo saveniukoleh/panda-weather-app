@@ -104,9 +104,7 @@ https://api.openweathermap.org/data/2.5/weather
 
 Parameters match the forecast route. The Worker sends `units=metric` and `appid`.
 
-Phase 3.1 exposes this route so a later phase can request a current snapshot. It does not decide whether the widget must call it.
-
-Do not assume that a forecast entry is identical to real-time current weather.
+`weatherService.load` always requests this route. Current weather is required. A 3-hour forecast slot is not a substitute and is not used to fill a missing snapshot.
 
 ## 6. Hourly Forecast Investigation
 
@@ -226,14 +224,18 @@ The Worker returns `{ error: { code, message } }` for rejected requests and for 
 The frontend maps those responses to `AppError`:
 
 - HTTP 400, 403, or 405: `invalid_request`.
-- HTTP 401: `unauthorized` (missing or rejected Worker credentials).
+- HTTP 401: `unauthorized` (OpenWeatherMap rejected the credentials). A missing Worker secret is `unknown`.
 - HTTP 404: `not_found`.
 - HTTP 429: `rate_limit`.
-- Network failures: `network`. `AbortError` propagates and is not an `AppError`.
+- Network failures: `network`. This includes a failed browser `fetch` and a Worker upstream fetch or body-read failure (HTTP 502, code `network`). `AbortError` propagates and is not an `AppError`.
 - Non-JSON or structurally invalid success payloads: `invalid_response`.
-- Anything else: `unknown`.
+- Anything else: `unknown`. A missing or too-short Worker secret is HTTP 500 `unknown`. The public body does not say whether the secret is missing.
 
-A provider HTTP 200 body whose `cod` is 400, 401, 404, or 429 is treated as that error. Redirects are not followed.
+A provider HTTP 200 body whose `cod` is 400, 401, 404, or 429 is treated as that error. Redirects are not followed. The client does not retry.
+
+Geocoding HTTP 200 with `[]` is an empty search result, not `not_found`. HTTP 404 is a failed request. Empty weather or forecast payloads are `invalid_response` when required fields are missing. Optional fields stay absent instead of being invented.
+
+Public messages are fixed strings. Responses do not include the API key, the upstream URL, or the provider error body.
 
 Do not display raw technical error messages directly to users.
 

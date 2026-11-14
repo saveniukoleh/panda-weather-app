@@ -31,7 +31,7 @@ export interface DailyForecast {
 export interface WeatherForecast {
   location: CityLocation;
   timezoneOffsetSeconds: number;
-  current: WeatherSnapshot | null;
+  current: WeatherSnapshot;
   entries: ForecastEntry[];
   daily: DailyForecast[];
 }

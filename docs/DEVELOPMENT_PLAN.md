@@ -5,8 +5,8 @@
 
 - Overall status: In Progress
 - Current phase: Phase 3 — OpenWeatherMap Integration
-- Completed phases: 1.1, 1.2, 1.3, 2.1, 2.2, 2.3, 3.1, 3.2, 3.3
-- Active phase: None (Phase 3.4 not started)
+- Completed phases: 1.1, 1.2, 1.3, 2.1, 2.2, 2.3, 3.1, 3.2, 3.3, 3.4
+- Active phase: None (Phase 4 not started)
 
 Task statuses:
 - [ ] Not started
@@ -113,12 +113,12 @@ Task statuses:
 
 ## 3.4. API Reliability
 
-- [ ] 3.4.1. Handle invalid API credentials.
-- [ ] 3.4.2. Handle city not found responses.
-- [ ] 3.4.3. Handle rate limiting.
-- [ ] 3.4.4. Handle network failures.
-- [ ] 3.4.5. Handle incomplete API responses.
-- [ ] 3.4.6. Verify independent request failure handling.
+- [x] 3.4.1. Handle invalid API credentials.
+- [x] 3.4.2. Handle city not found responses.
+- [x] 3.4.3. Handle rate limiting.
+- [x] 3.4.4. Handle network failures.
+- [x] 3.4.5. Handle incomplete API responses.
+- [x] 3.4.6. Verify independent request failure handling.
 
 ---
 
@@ -411,6 +411,13 @@ Task statuses:
 - Local dates add `city.timezone` seconds to each Unix timestamp and read the calendar date in UTC fields, so grouping does not use the browser timezone.
 - Daily averages use only entries that exist for that city-local date. Chart datasets are plain `{ label, temperatureC }` points, with no Chart.js instance.
 - Added unit tests for normalization, timezone grouping, current-day extraction, averages, chart datasets, and incomplete values. The test suite was not executed in this phase.
+
+## 3.4. API Reliability
+
+- Kept the existing `AppRequestError` mapping. A missing Worker secret stays generic `unknown`. Provider 401 and `cod` 401 stay `unauthorized`. HTTP 429 and `cod` 429 stay `rate_limit`. No retries were added.
+- An upstream fetch or body-read failure is now `network`. Browser `AbortError` still propagates. Empty geocoding stays `[]`; HTTP 404 stays `not_found`.
+- `WeatherForecast.current` is required. `weatherService.load` still fails the whole call if current weather or the forecast fails, and concurrent calls do not share results.
+- Added client, worker, and weather-service tests for these cases. The test suite was not executed in this phase.
 
 ## Decisions Log
 

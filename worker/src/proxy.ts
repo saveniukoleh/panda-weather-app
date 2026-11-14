@@ -16,7 +16,13 @@ const UPSTREAM_URLS = {
 export type WeatherLang = 'en' | 'uk';
 
 export type PublicErrorCode =
-  'unauthorized' | 'not_found' | 'rate_limit' | 'invalid_request' | 'invalid_response' | 'unknown';
+  | 'network'
+  | 'unauthorized'
+  | 'not_found'
+  | 'rate_limit'
+  | 'invalid_request'
+  | 'invalid_response'
+  | 'unknown';
 
 export interface WorkerEnv {
   OPENWEATHER_API_KEY?: string;
@@ -49,6 +55,7 @@ export type ParseResult =
 export type FetchLike = (input: string, init?: RequestInit) => Promise<Response>;
 
 const MESSAGES: Record<PublicErrorCode, string> = {
+  network: 'The weather service could not be reached.',
   unauthorized: 'The weather service rejected the request.',
   not_found: 'The requested data was not found.',
   rate_limit: 'The weather service is rate limited. Try again later.',
@@ -179,7 +186,7 @@ export async function handleRequest(
       signal: AbortSignal.timeout(UPSTREAM_TIMEOUT_MS),
     });
   } catch {
-    return jsonError(502, 'unknown', origin);
+    return jsonError(502, 'network', origin);
   }
 
   if (upstream.status >= 300 && upstream.status < 400) return jsonError(502, 'unknown', origin);
@@ -188,7 +195,7 @@ export async function handleRequest(
   try {
     text = await upstream.text();
   } catch {
-    return jsonError(502, 'unknown', origin);
+    return jsonError(502, 'network', origin);
   }
 
   if (text.length > MAX_UPSTREAM_BODY_CHARS || text.includes(apiKey)) {

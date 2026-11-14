@@ -74,7 +74,14 @@ async function apiGet(
     throw new AppRequestError('network');
   }
 
-  const text = await response.text();
+  let text: string;
+  try {
+    text = await response.text();
+  } catch (error) {
+    if (isAbortError(error)) throw error;
+    throw new AppRequestError('network');
+  }
+
   const parsed = parseJson(text);
   if (!response.ok) {
     throw errorFromHttpStatus(response.status, parsed.ok ? parsed.value : null);

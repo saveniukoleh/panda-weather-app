@@ -81,4 +81,13 @@ describe('response validation', () => {
       }),
     ).toThrow(AppRequestError);
   });
+
+  it('keeps a forecast slot that omits optional measurements', () => {
+    expect(
+      assertForecastPayload({
+        city: { name: 'Kyiv', country: 'UA', timezone: 0, coord: { lat: 50, lon: 30 } },
+        list: [{ dt: 1_700_000_000, main: { temp: 4 } }],
+      }).list,
+    ).toEqual([{ dt: 1_700_000_000, main: { temp: 4 } }]);
+  });
 });

@@ -255,7 +255,7 @@ interface DailyForecast {
 interface WeatherForecast {
   location: CityLocation;
   timezoneOffsetSeconds: number;
-  current: WeatherSnapshot | null;
+  current: WeatherSnapshot;
   entries: ForecastEntry[];
   daily: DailyForecast[];
 }
@@ -367,13 +367,15 @@ Vue components and Pinia stores do not call OpenWeatherMap or the Worker directl
 - Validates query parameters, then calls the matching OpenWeatherMap URL with `appid` and `units=metric`.
 - Allows `https://saveniukoleh.github.io`, origins listed in `ALLOWED_ORIGINS`, and local `http://localhost` or `http://127.0.0.1` on any port. Other origins are rejected before a provider request.
 - CORS is only a browser control. The route and parameter allowlist is what prevents an open proxy.
-- Returns JSON. Failures use `{ error: { code, message } }` with a fixed message. Upstream error bodies, redirects, and any payload containing the API key are not returned.
+- Returns JSON. Failures use `{ error: { code, message } }` with a fixed message. Upstream error bodies, redirects, request URLs, and any payload containing the API key are not returned.
+- A missing or too-short `OPENWEATHER_API_KEY` is HTTP 500 `unknown` and does not call OpenWeatherMap. A provider HTTP 401, or HTTP 200 with `cod` 401, is `unauthorized`.
+- An upstream fetch or body-read failure is HTTP 502 `network`. Provider HTTP 5xx and redirects stay `unknown`. There is no retry.
 
 ### 10.2. `services/api` — HTTP client
 
 - Reads `import.meta.env.VITE_API_BASE_URL` (the Worker base URL). It does not read an OpenWeatherMap API key.
 - Calls the Worker routes in section 10.1 with `fetch` and an optional `AbortSignal`.
-- Lets abort errors propagate. Maps transport failures, HTTP errors, and malformed JSON to `AppError`.
+- Lets abort errors propagate. Maps transport failures, HTTP errors, and malformed JSON to `AppError`. A Worker `network` code stays `network`; other HTTP 5xx responses stay `unknown`.
 - Validates successful JSON before returning it. `weatherService` normalizes those payloads into `WeatherForecast`. Raw provider DTOs stay inside `services/api` and `services/weather`.
 - Does not return raw `Response` objects to feature code.
 
@@ -393,7 +395,8 @@ Vue components and Pinia stores do not call OpenWeatherMap or the Worker directl
 - Current weather is required. A forecast slot is the next 3-hour point, not the live observation, and it does not fill `WeatherSnapshot` (`feelsLikeC`, `humidity`, `windSpeed`, `pressure`).
 - `currentDayForecastEntries` and `toWeatherChartDatasets` select the city’s current local date from `entries` and return numeric chart points. They do not create a Chart.js instance.
 - Local dates add `city.timezone` seconds to the Unix timestamp and format the result with UTC calendar fields.
-- **Throws:** `AppRequestError` from the client. `AbortError` propagates. Slots with a non-finite timestamp or temperature are skipped. Optional gaps stay `null`. An empty `list` yields empty `entries`, `daily`, and chart series.
+- **Throws:** `AppRequestError` from either request. `AbortError` propagates. `load` has no shared mutable result: a failure cannot replace another call’s forecast. It does not return current weather with a fabricated forecast, or the reverse.
+- Slots with a non-finite timestamp or temperature are skipped. Optional gaps stay `null`. An empty `list` yields empty `entries`, `daily`, and chart series.
 
 ### 10.5. `locationService` — `services/geolocation`
 
@@ -437,8 +440,8 @@ Use `AppError` consistently.
 
 | Code | Typical cause |
 | --- | --- |
-| `network` | Fetch failed (offline, DNS, abort after user-visible failure) |
-| `unauthorized` | HTTP 401 — the Worker reported that OpenWeatherMap rejected the credentials |
+| `network` | The browser could not reach the Worker, or the Worker could not reach OpenWeatherMap. `AbortError` is not this code |
+| `unauthorized` | HTTP 401 — OpenWeatherMap rejected the credentials. A missing Worker secret is `unknown`, not this code |
 | `invalid_request` | HTTP 400 |
 | `not_found` | HTTP 404 or no usable location |
 | `rate_limit` | HTTP 429 |

@@ -19,6 +19,13 @@ describe('errorFromHttpStatus', () => {
     expect(errorFromHttpStatus(403, null).code).toBe('invalid_request');
     expect(errorFromHttpStatus(405, null).code).toBe('invalid_request');
     expect(errorFromHttpStatus(429, null).code).toBe('rate_limit');
+    expect(
+      errorFromHttpStatus(502, { error: { code: 'network', message: 'dial appid=secret' } }).code,
+    ).toBe('network');
+    expect(
+      errorFromHttpStatus(502, { error: { code: 'network', message: 'dial appid=secret' } }).message,
+    ).not.toContain('secret');
+    expect(errorFromHttpStatus(502, null).code).toBe('unknown');
     expect(errorFromHttpStatus(500, { message: 'secret upstream detail' }).code).toBe('unknown');
     expect(errorFromHttpStatus(500, { message: 'secret upstream detail' }).message).not.toContain(
       'secret upstream detail',
