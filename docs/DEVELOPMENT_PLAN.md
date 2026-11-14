@@ -3,10 +3,10 @@
 
 ## Project Status
 
-- Overall status: Not Started
-- Current phase: Planning
-- Completed phases: 0
-- Active phase: None
+- Overall status: In Progress
+- Current phase: Phase 1 — Project Initialization
+- Completed phases: 1.1, 1.2
+- Active phase: None (1.3 not started)
 
 Task statuses:
 - [ ] Not started
@@ -29,14 +29,14 @@ Task statuses:
 
 ## 1.2. Development Environment
 
-- [ ] 1.2.1. Initialize a Vue 3 project using Vite.
-- [ ] 1.2.2. Configure TypeScript.
-- [ ] 1.2.3. Configure project scripts.
-- [ ] 1.2.4. Install required dependencies.
-- [ ] 1.2.5. Configure ESLint.
-- [ ] 1.2.6. Configure Prettier.
-- [ ] 1.2.7. Configure Vitest.
-- [ ] 1.2.8. Verify that the application starts successfully.
+- [x] 1.2.1. Initialize a Vue 3 project using Vite.
+- [x] 1.2.2. Configure TypeScript.
+- [x] 1.2.3. Configure project scripts.
+- [x] 1.2.4. Install required dependencies.
+- [x] 1.2.5. Configure ESLint.
+- [x] 1.2.6. Configure Prettier.
+- [x] 1.2.7. Configure Vitest.
+- [x] 1.2.8. Verify that the application starts successfully.
 
 ## 1.3. Project Configuration
 
@@ -356,9 +356,18 @@ Task statuses:
 - Original assignment requirements reviewed.
 - Implementation not started.
 
+## 1.2. Development Environment
+
+- Initialized Vue 3 + TypeScript using the official Vite `vue-ts` template.
+- Preserved existing documentation, README, and `.gitignore`.
+- Added Pinia, Chart.js, and Vue I18n as runtime dependencies without wiring application features.
+- Configured strict TypeScript project references, ESLint (Vue + TypeScript + Prettier), Prettier, and Vitest with a smoke test.
+- Verified `type-check`, `lint`, `format:check`, `test:run`, `build`, and `dev`.
+
 ## Decisions Log
 
-Record important technical and architectural decisions here.
+- Vue Router was not installed. Architecture treats routing as optional, and the current shell does not require it.
+- Vite 6 was selected instead of the current Vite 8 template default because the local Node.js version is 20.18.2. Vite 8 requires Node `^20.19.0 || >=22.12.0`.
 
 ## Issues and Risks
 
