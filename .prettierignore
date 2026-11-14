@@ -4,3 +4,6 @@ node_modules
 docs
 README.md
 package-lock.json
+.env
+.env.*
+.env.example

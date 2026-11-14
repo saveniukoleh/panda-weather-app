@@ -4,9 +4,9 @@
 ## Project Status
 
 - Overall status: In Progress
-- Current phase: Phase 1 — Project Initialization
-- Completed phases: 1.1, 1.2
-- Active phase: None (1.3 not started)
+- Current phase: Phase 1 complete — next is Phase 2
+- Completed phases: 1.1, 1.2, 1.3
+- Active phase: None (Phase 2 not started)
 
 Task statuses:
 - [ ] Not started
@@ -40,11 +40,11 @@ Task statuses:
 
 ## 1.3. Project Configuration
 
-- [ ] 1.3.1. Create the initial source directory structure.
-- [ ] 1.3.2. Configure environment variables.
-- [ ] 1.3.3. Configure the application entry point.
-- [ ] 1.3.4. Configure global CSS.
-- [ ] 1.3.5. Verify the initial application build.
+- [x] 1.3.1. Create the initial source directory structure.
+- [x] 1.3.2. Configure environment variables.
+- [x] 1.3.3. Configure the application entry point.
+- [x] 1.3.4. Configure global CSS.
+- [x] 1.3.5. Verify the initial application build.
 
 ---
 
@@ -363,6 +363,14 @@ Task statuses:
 - Added Pinia, Chart.js, and Vue I18n as runtime dependencies without wiring application features.
 - Configured strict TypeScript project references, ESLint (Vue + TypeScript + Prettier), Prettier, and Vitest with a smoke test.
 - Verified `type-check`, `lint`, `format:check`, `test:run`, `build`, and `dev`.
+
+## 1.3. Project Configuration
+
+- Created the initial `src/` directory structure from `ARCHITECTURE.md`, using `.gitkeep` for empty folders.
+- Removed Vite demo components and assets.
+- Added `.env.example` with `VITE_OPENWEATHER_API_KEY` and typed it in `src/vite-env.d.ts`. No real key was added.
+- Replaced the template stylesheet with a baseline global CSS file and kept `main.ts` as a minimal Vue mount.
+- Verified type-check, lint, format, tests, production build, and the development server.
 
 ## Decisions Log
 

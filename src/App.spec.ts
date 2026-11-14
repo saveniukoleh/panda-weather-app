@@ -6,5 +6,6 @@ describe('test environment', () => {
   it('mounts the root Vue component', () => {
     const wrapper = mount(App);
     expect(wrapper.exists()).toBe(true);
+    expect(wrapper.text()).toContain('Panda Weather App');
   });
 });
