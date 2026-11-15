@@ -208,12 +208,12 @@ Task statuses:
 
 ## 6.3. Favorites Interface
 
-- [ ] 6.3.1. Create the Favorites tab.
-- [ ] 6.3.2. Display favorite weather widgets.
-- [ ] 6.3.3. Remove city search from favorite widgets.
-- [ ] 6.3.4. Support Day / 5 Days switching.
-- [ ] 6.3.5. Support removing favorites from the tab.
-- [ ] 6.3.6. Implement empty favorites state.
+- [x] 6.3.1. Create the Favorites tab.
+- [x] 6.3.2. Display favorite weather widgets.
+- [x] 6.3.3. Remove city search from favorite widgets.
+- [x] 6.3.4. Support Day / 5 Days switching.
+- [x] 6.3.5. Support removing favorites from the tab.
+- [x] 6.3.6. Implement empty favorites state.
 
 ---
 
@@ -464,6 +464,12 @@ Moved into Phase 4.3 so the default dashboard widget can load a city on startup.
 - Added `favoritesStore` for `CityLocation` entries only. It is separate from `weatherWidgetsStore`. Add and remove match cities by `lat` and `lon`. A duplicate add is a no-op. A sixth city is rejected. Nothing is written to localStorage.
 - `WeatherWidget` shows a Favorite control once the current forecast is on screen. The control reflects `isFavorite` for that city and adds or removes it. At the five-city limit, `ConfirmModal` explains that an existing favorite must be removed first, and the city is not added.
 - The Favorites tab and favorite weather widgets were not started.
+
+## 6.3. Favorites Interface
+
+- `FavoritesView` replaces the placeholder with the cities in `favoritesStore`. Each city is one `WeatherWidget` with search disabled and `location` set. The list key is that city's `lat,lon`.
+- The widget's existing Favorite control removes the city, and the list updates immediately. Day / 5 Days stays inside each widget. An empty list shows `EmptyState`.
+- Weather requests stay in each `WeatherWidget`. `weatherWidgetsStore` is not used. The existing Weather / Favorites tabs are unchanged.
 
 ## Decisions Log
 

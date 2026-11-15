@@ -1,6 +1,56 @@
+<script setup lang="ts">
+import { storeToRefs } from 'pinia';
+import EmptyState from '../components/common/EmptyState.vue';
+import WeatherWidget from '../components/weather/WeatherWidget.vue';
+import { useFavoritesStore } from '../stores/favoritesStore';
+import type { CityLocation } from '../types/city';
+
+const store = useFavoritesStore();
+const { cities } = storeToRefs(store);
+
+function cityKey(city: CityLocation): string {
+  return `${city.lat},${city.lon}`;
+}
+</script>
+
 <template>
-  <section>
+  <section class="favorites" aria-label="Favorites">
     <h2>Favorites</h2>
-    <p>Favorite cities will appear here.</p>
+    <EmptyState
+      v-if="cities.length === 0"
+      title="No favorite cities"
+      description="Save a city from the weather dashboard to see it here."
+    />
+    <ul v-else class="favorites__list">
+      <li v-for="city in cities" :key="cityKey(city)" class="favorites__item">
+        <WeatherWidget :id="cityKey(city)" :searchable="false" :location="city" />
+      </li>
+    </ul>
   </section>
 </template>
+
+<style scoped>
+.favorites {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.favorites h2 {
+  margin: 0;
+}
+
+.favorites__list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+  gap: 1rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.favorites__item {
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+}
+</style>
