@@ -4,9 +4,9 @@
 ## Project Status
 
 - Overall status: In Progress
-- Current phase: Phase 3 — OpenWeatherMap Integration
-- Completed phases: 1.1, 1.2, 1.3, 2.1, 2.2, 2.3, 3.1, 3.2, 3.3, 3.4
-- Active phase: None (Phase 4 not started)
+- Current phase: Phase 4 — Weather Widgets
+- Completed phases: 1.1, 1.2, 1.3, 2.1, 2.2, 2.3, 3.1, 3.2, 3.3, 3.4, 4.1
+- Active phase: None (Phase 4.2 not started)
 
 Task statuses:
 - [ ] Not started
@@ -126,12 +126,12 @@ Task statuses:
 
 ## 4.1. Weather Widget Foundation
 
-- [ ] 4.1.1. Create the WeatherWidget component.
-- [ ] 4.1.2. Define the widget properties.
-- [ ] 4.1.3. Define independent widget state.
-- [ ] 4.1.4. Implement city selection.
-- [ ] 4.1.5. Implement widget-specific loading state.
-- [ ] 4.1.6. Implement widget-specific error state.
+- [x] 4.1.1. Create the WeatherWidget component.
+- [x] 4.1.2. Define the widget properties.
+- [x] 4.1.3. Define independent widget state.
+- [x] 4.1.4. Implement city selection.
+- [x] 4.1.5. Implement widget-specific loading state.
+- [x] 4.1.6. Implement widget-specific error state.
 
 ## 4.2. Weather Information Card
 
@@ -419,12 +419,21 @@ Task statuses:
 - `WeatherForecast.current` is required. `weatherService.load` still fails the whole call if current weather or the forecast fails, and concurrent calls do not share results.
 - Added client, worker, and weather-service tests for these cases. The test suite was not executed in this phase.
 
+## 4.1. Weather Widget Foundation
+
+- Added `WeatherWidget` and `CitySearch`. City search uses the existing `useCitySearch` composable. Weather requests go through `useWeatherWidget` and `weatherService`, with `AbortSignal`.
+- Each widget instance keeps its own selected city, forecast, loading flag, error, and in-flight request. A newer request aborts the previous one and ignores a stale result. Unmount aborts the request.
+- Searchable widgets select a city from autocomplete. Non-searchable widgets follow the `location` prop and hide search. `locale` defaults to `en` and is sent with the weather request. The forecast is stored and not rendered.
+- The dashboard collection, add/remove, and the weather card were not started. No Pinia store was added.
+- Added composable and component tests. The test suite was not executed in this phase.
+
 ## Decisions Log
 
 - Vue Router was not installed. Architecture treats routing as optional, and the current shell does not require it.
 - Vite 6 was selected instead of the current Vite 8 template default because the local Node.js version is 20.18.2. Vite 8 requires Node `^20.19.0 || >=22.12.0`.
 - OpenWeatherMap is reached only through the Cloudflare Worker. Wrangler is pinned to 4.86.0 because Wrangler 4.87+ requires Node.js 22, and the local runtime is Node.js 20.18.2.
 - The frontend stores the Worker base URL in `VITE_API_BASE_URL`. The provider key is the Worker secret `OPENWEATHER_API_KEY`.
+- Phase 4.1 keeps per-widget runtime state in `useWeatherWidget` instead of `weatherWidgetsStore`. The store remains the Phase 4.3 collection.
 
 ## Issues and Risks
 
