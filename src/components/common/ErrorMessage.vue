@@ -25,6 +25,9 @@ const emit = defineEmits<{
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
   gap: var(--space-2);
   padding: var(--space-3);
   border: 1px solid var(--color-danger);
@@ -35,6 +38,7 @@ const emit = defineEmits<{
 
 .error-message p {
   margin: 0;
+  overflow-wrap: anywhere;
   font-size: var(--font-size-sm);
 }
 </style>

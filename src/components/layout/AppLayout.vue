@@ -24,6 +24,8 @@ const emit = defineEmits<{
 
 <style scoped>
 .app-layout {
+  min-width: 0;
+  max-width: 100%;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -31,6 +33,20 @@ const emit = defineEmits<{
 
 .app-layout__main {
   flex: 1;
+  min-width: 0;
+  max-width: 100%;
   padding: var(--space-5);
+}
+
+@media (max-width: 768px) {
+  .app-layout__main {
+    padding: var(--space-4);
+  }
+}
+
+@media (max-width: 480px) {
+  .app-layout__main {
+    padding: var(--space-3);
+  }
 }
 </style>

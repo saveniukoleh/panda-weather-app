@@ -36,6 +36,8 @@ function cityKey(city: CityLocation): string {
   display: flex;
   flex-direction: column;
   gap: var(--space-4);
+  min-width: 0;
+  max-width: 100%;
 }
 
 .favorites h2 {
@@ -47,8 +49,9 @@ function cityKey(city: CityLocation): string {
 
 .favorites__list {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: var(--space-4);
+  min-width: 0;
   margin: 0;
   padding: 0;
   list-style: none;
@@ -57,10 +60,30 @@ function cityKey(city: CityLocation): string {
 .favorites__item {
   display: flex;
   flex-direction: column;
+  min-width: 0;
+  max-width: 100%;
   padding: var(--space-4);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
   background: var(--color-surface);
   box-shadow: var(--shadow-sm);
+}
+
+@media (max-width: 1024px) {
+  .favorites__list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .favorites__item {
+    padding: var(--space-3);
+  }
+}
+
+@media (max-width: 640px) {
+  .favorites__list {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }
 </style>

@@ -278,13 +278,13 @@ Intermediate subphase between Phase 7 and Phase 8. Completed Phase 7 tasks stay 
 
 ## 8.2. Responsive Layout
 
-- [ ] 8.2.1. Implement desktop layout.
-- [ ] 8.2.2. Implement tablet layout.
-- [ ] 8.2.3. Implement mobile layout.
+- [x] 8.2.1. Implement desktop layout.
+- [x] 8.2.2. Implement tablet layout.
+- [x] 8.2.3. Implement mobile layout.
 - [ ] 8.2.4. Verify 1200px viewport.
 - [ ] 8.2.5. Verify 768px viewport.
 - [ ] 8.2.6. Verify 360px viewport.
-- [ ] 8.2.7. Fix horizontal overflow.
+- [x] 8.2.7. Fix horizontal overflow.
 - [ ] 8.2.8. Verify chart responsiveness.
 
 ## 8.3. Interaction Polish
@@ -511,7 +511,13 @@ Intermediate subphase between Phase 7 and Phase 8. Completed Phase 7 tasks stay 
 
 - Shared Day and Night tokens in `global.css` now cover surfaces, text, borders, accent, feedback colors, radii, shadows, spacing, type scale, and short transitions. Theme switching and persistence are unchanged.
 - Weather and Favorites cards, controls, the confirmation modal, and loading, error, and empty states use that scale. The temperature chart caption reads the existing `chart.label` plus `(°C)` for both ranges.
-- Responsive layout remains for Phase 8.2. Automated checks were not run.
+- Responsive layout was left for Phase 8.2. Automated checks were not run.
+
+## 8.2. Responsive Layout
+
+- Desktop stays the default: three widget columns from 1025 px up. From 1024 px down, including 768 px, the grid uses two columns. From 640 px down, including 360 px, it uses one column. Header controls wrap, and below 480 px the title stacks above them.
+- Cards, search suggestions, the confirmation modal, and feedback states are constrained to their containers. The temperature chart keeps `responsive: true`, skips overlapping time labels, and keeps the existing unit caption above the canvas.
+- Viewport checks at 1200 px, 768 px, and 360 px, and chart resize checks, are still open. Automated checks were not run.
 
 ## Decisions Log
 

@@ -92,6 +92,8 @@ function cityLabel(city: CityLocation): string {
 
 .city-search input {
   width: 100%;
+  min-width: 0;
+  max-width: 100%;
   min-height: var(--control-height);
   padding: 0 var(--space-3);
   border: 1px solid var(--color-border);
@@ -114,7 +116,10 @@ function cityLabel(city: CityLocation): string {
   align-items: stretch;
   gap: var(--space-1);
   width: 100%;
+  max-width: 100%;
+  max-height: min(16rem, 50vh);
   margin: 0;
+  overflow-y: auto;
   padding: var(--space-1);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);

@@ -107,4 +107,21 @@ function onTabKeydown(event: KeyboardEvent): void {
   color: var(--color-accent);
   font-weight: var(--font-weight-semibold);
 }
+
+@media (max-width: 768px) {
+  .app-nav {
+    padding: var(--space-3) var(--space-4);
+  }
+}
+
+@media (max-width: 480px) {
+  .app-nav {
+    padding: var(--space-3);
+  }
+
+  .app-nav button {
+    flex: 1 1 0;
+    min-width: 0;
+  }
+}
 </style>

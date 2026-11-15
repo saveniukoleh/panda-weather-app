@@ -75,7 +75,12 @@ async function syncChart(): Promise<void> {
         color: chartTextColor(),
         scales: {
           x: {
-            ticks: { color: chartTextColor() },
+            ticks: {
+              color: chartTextColor(),
+              maxRotation: 0,
+              autoSkip: true,
+              autoSkipPadding: 12,
+            },
             grid: { color: chartToken('--color-separator', '#e3e9f0') },
           },
           y: {
@@ -136,7 +141,13 @@ onBeforeUnmount(() => {
 <style scoped>
 .temperature-chart {
   width: 100%;
-  max-width: 28rem;
+  max-width: min(100%, 28rem);
+  min-width: 0;
+}
+
+.temperature-chart canvas {
+  display: block;
+  max-width: 100%;
 }
 
 .temperature-chart__unit,

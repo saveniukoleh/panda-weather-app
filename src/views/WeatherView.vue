@@ -67,13 +67,17 @@ function initialLocationFor(id: string): CityLocation | null {
   display: flex;
   flex-direction: column;
   gap: var(--space-4);
+  min-width: 0;
+  max-width: 100%;
 }
 
 .weather-dashboard__toolbar {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: var(--space-4);
+  flex-wrap: wrap;
+  gap: var(--space-3) var(--space-4);
+  min-width: 0;
 }
 
 .weather-dashboard__toolbar h2,
@@ -94,8 +98,9 @@ function initialLocationFor(id: string): CityLocation | null {
 
 .weather-dashboard__widgets {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: var(--space-4);
+  min-width: 0;
   margin: 0;
   padding: 0;
   list-style: none;
@@ -106,10 +111,30 @@ function initialLocationFor(id: string): CityLocation | null {
   flex-direction: column;
   align-items: flex-start;
   gap: var(--space-3);
+  min-width: 0;
+  max-width: 100%;
   padding: var(--space-4);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
   background: var(--color-surface);
   box-shadow: var(--shadow-sm);
+}
+
+@media (max-width: 1024px) {
+  .weather-dashboard__widgets {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .weather-dashboard__widget {
+    padding: var(--space-3);
+  }
+}
+
+@media (max-width: 640px) {
+  .weather-dashboard__widgets {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }
 </style>

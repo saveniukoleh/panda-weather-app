@@ -64,13 +64,16 @@ const { locale, theme } = storeToRefs(settings);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: var(--space-4);
+  flex-wrap: wrap;
+  gap: var(--space-3) var(--space-4);
+  min-width: 0;
   padding: var(--space-4) var(--space-5);
   border-bottom: 1px solid var(--color-separator);
   background: var(--color-surface);
 }
 
 .app-header__title {
+  min-width: 0;
   margin: 0;
   font-size: var(--font-size-xl);
   font-weight: var(--font-weight-semibold);
@@ -86,6 +89,8 @@ const { locale, theme } = storeToRefs(settings);
 }
 
 .app-header__controls {
+  flex-wrap: wrap;
+  min-width: 0;
   gap: var(--space-4);
 }
 
@@ -132,5 +137,27 @@ const { locale, theme } = storeToRefs(settings);
   background: var(--color-accent-soft);
   color: var(--color-accent);
   font-weight: var(--font-weight-semibold);
+}
+
+@media (max-width: 768px) {
+  .app-header {
+    padding: var(--space-3) var(--space-4);
+  }
+
+  .app-header__controls {
+    gap: var(--space-2);
+  }
+}
+
+@media (max-width: 480px) {
+  .app-header {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .app-header__controls {
+    justify-content: space-between;
+    width: 100%;
+  }
 }
 </style>

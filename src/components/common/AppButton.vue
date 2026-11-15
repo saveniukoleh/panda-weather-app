@@ -49,9 +49,12 @@ function onClick(event: MouseEvent): void {
   border-radius: var(--radius-md);
   background: var(--color-surface);
   color: var(--color-text);
+  max-width: 100%;
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-medium);
   line-height: var(--line-height-tight);
+  white-space: normal;
+  text-align: center;
   cursor: pointer;
   transition:
     background-color var(--duration-fast),

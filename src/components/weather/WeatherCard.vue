@@ -113,6 +113,8 @@ function iconUrl(icon: string): string {
 }
 
 .weather-card__place h2 {
+  max-width: 100%;
+  overflow-wrap: anywhere;
   font-size: var(--font-size-lg);
   font-weight: var(--font-weight-semibold);
   line-height: var(--line-height-tight);
@@ -125,7 +127,10 @@ function iconUrl(icon: string): string {
 
 .weather-card__current {
   flex-direction: row;
+  flex-wrap: wrap;
   align-items: center;
+  width: 100%;
+  min-width: 0;
   gap: var(--space-3);
 }
 
@@ -136,13 +141,15 @@ function iconUrl(icon: string): string {
 }
 
 .weather-card__current p:not(.weather-card__temperature) {
+  min-width: 0;
+  overflow-wrap: anywhere;
   color: var(--color-text-secondary);
   font-size: var(--font-size-sm);
 }
 
 .weather-card dl {
   display: grid;
-  grid-template-columns: auto auto;
+  grid-template-columns: minmax(0, 1fr) auto;
   gap: var(--space-2) var(--space-4);
   width: 100%;
   margin: 0;
@@ -151,6 +158,8 @@ function iconUrl(icon: string): string {
 }
 
 .weather-card dt {
+  min-width: 0;
+  overflow-wrap: anywhere;
   color: var(--color-text-muted);
   font-size: var(--font-size-sm);
 }

@@ -89,7 +89,9 @@ function onKeydown(event: KeyboardEvent): void {
 .confirm-modal {
   width: 100%;
   max-width: 28rem;
+  max-height: min(32rem, calc(100vh - 2 * var(--space-4)));
   padding: var(--space-5);
+  overflow: auto;
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
   background: var(--color-surface-elevated);
@@ -116,8 +118,24 @@ function onKeydown(event: KeyboardEvent): void {
 
 .confirm-modal__actions {
   display: flex;
+  flex-wrap: wrap;
   justify-content: flex-end;
   gap: var(--space-2);
   margin-top: var(--space-4);
+}
+
+@media (max-width: 480px) {
+  .confirm-modal {
+    padding: var(--space-4);
+  }
+
+  .confirm-modal__actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .confirm-modal__actions :deep(.app-button) {
+    width: 100%;
+  }
 }
 </style>

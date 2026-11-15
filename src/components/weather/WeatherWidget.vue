@@ -236,6 +236,8 @@ function errorText(code: AppErrorCode): string {
   align-items: flex-start;
   gap: var(--space-3);
   width: 100%;
+  min-width: 0;
+  max-width: 100%;
 }
 
 .forecast-range {
@@ -256,9 +258,11 @@ function errorText(code: AppErrorCode): string {
 
 .daily-forecast li {
   display: flex;
+  flex: 1 1 7.5rem;
   flex-direction: column;
   align-items: flex-start;
   gap: var(--space-1);
+  min-width: 0;
   padding: var(--space-2) var(--space-3);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
@@ -271,6 +275,8 @@ function errorText(code: AppErrorCode): string {
 
 .daily-forecast__date,
 .daily-forecast__condition {
+  max-width: 100%;
+  overflow-wrap: anywhere;
   color: var(--color-text-muted);
   font-size: var(--font-size-xs);
 }
