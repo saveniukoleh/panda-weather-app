@@ -1,6 +1,7 @@
 import { nextTick } from 'vue';
 import { flushPromises, mount, type VueWrapper } from '@vue/test-utils';
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { createPinia, setActivePinia } from 'pinia';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { CITY_SEARCH_DEBOUNCE_MS } from '../../composables/useCitySearch';
 import { AppRequestError } from '../../services/api/errors';
 import { geocodingService } from '../../services/weather/geocodingService';
@@ -67,6 +68,10 @@ async function chooseCity(widget: VueWrapper, city: CityLocation): Promise<void>
 }
 
 describe('WeatherWidget', () => {
+  beforeEach(() => {
+    setActivePinia(createPinia());
+  });
+
   afterEach(() => {
     search.mockReset();
     load.mockReset();

@@ -191,13 +191,13 @@ Task statuses:
 
 ## 6.1. Favorites Management
 
-- [ ] 6.1.1. Create the favorites store.
-- [ ] 6.1.2. Implement adding a city to favorites.
-- [ ] 6.1.3. Implement removing a city from favorites.
-- [ ] 6.1.4. Prevent duplicate favorites.
-- [ ] 6.1.5. Enforce the five-city limit.
-- [ ] 6.1.6. Implement the maximum-limit modal.
-- [ ] 6.1.7. Visually indicate favorite status.
+- [x] 6.1.1. Create the favorites store.
+- [x] 6.1.2. Implement adding a city to favorites.
+- [x] 6.1.3. Implement removing a city from favorites.
+- [x] 6.1.4. Prevent duplicate favorites.
+- [x] 6.1.5. Enforce the five-city limit.
+- [x] 6.1.6. Implement the maximum-limit modal.
+- [x] 6.1.7. Visually indicate favorite status.
 
 ## 6.2. Favorites Persistence
 
@@ -458,6 +458,12 @@ Moved into Phase 4.3 so the default dashboard widget can load a city on startup.
 - Each `WeatherWidget` keeps its own Day / 5 Days mode, defaulting to Day. Switching modes does not request weather again. Day mode still shows the current card and the current-day chart.
 - 5 Days mode lists `forecast.daily` in its existing order: local date, average °C, and the normalized condition and icon when present. The same `TemperatureChart` receives `dailyAverages`. Missing days are not invented.
 - Grouping, averages, labels, and timezone boundaries stay in `normalizeWeather`. A city change still clears the forecast before the next result, so the previous city's days cannot remain on screen.
+
+## 6.1. Favorites Management
+
+- Added `favoritesStore` for `CityLocation` entries only. It is separate from `weatherWidgetsStore`. Add and remove match cities by `lat` and `lon`. A duplicate add is a no-op. A sixth city is rejected. Nothing is written to localStorage.
+- `WeatherWidget` shows a Favorite control once the current forecast is on screen. The control reflects `isFavorite` for that city and adds or removes it. At the five-city limit, `ConfirmModal` explains that an existing favorite must be removed first, and the city is not added.
+- The Favorites tab and favorite weather widgets were not started.
 
 ## Decisions Log
 

@@ -1,11 +1,13 @@
 <script setup lang="ts">
 import { computed, ref, useId, watch } from 'vue';
 import AppButton from '../common/AppButton.vue';
+import ConfirmModal from '../common/ConfirmModal.vue';
 import ErrorMessage from '../common/ErrorMessage.vue';
 import LoadingIndicator from '../common/LoadingIndicator.vue';
 import { useCitySearch } from '../../composables/useCitySearch';
 import { useWeatherWidget } from '../../composables/useWeatherWidget';
 import { toWeatherChartDatasets } from '../../services/weather/normalizeWeather';
+import { useFavoritesStore } from '../../stores/favoritesStore';
 import type { WeatherLanguage } from '../../types/api';
 import type { CityLocation } from '../../types/city';
 import type { DailyForecast } from '../../types/weather';
@@ -123,6 +125,28 @@ function conditionText(day: DailyForecast): string {
 function iconUrl(icon: string): string {
   return `https://openweathermap.org/img/wn/${encodeURIComponent(icon)}@2x.png`;
 }
+
+const favorites = useFavoritesStore();
+const favoritesLimitOpen = ref(false);
+
+const isFavorite = computed(() => {
+  const city = forecast.value?.location;
+  return city !== undefined && favorites.isFavorite(city);
+});
+
+function toggleFavorite(): void {
+  const city = forecast.value?.location;
+  if (!city) return;
+  if (favorites.isFavorite(city)) {
+    favorites.remove(city);
+    return;
+  }
+  if (!favorites.add(city)) favoritesLimitOpen.value = true;
+}
+
+function closeFavoritesLimit(): void {
+  favoritesLimitOpen.value = false;
+}
 </script>
 
 <template>
@@ -144,6 +168,14 @@ function iconUrl(icon: string): string {
       @retry="reload"
     />
     <template v-else-if="forecast">
+      <AppButton
+        :variant="isFavorite ? 'primary' : 'secondary'"
+        :aria-pressed="isFavorite"
+        :aria-label="isFavorite ? 'Remove from favorites' : 'Add to favorites'"
+        @click="toggleFavorite"
+      >
+        {{ isFavorite ? 'Favorited' : 'Favorite' }}
+      </AppButton>
       <div class="forecast-range" role="group" aria-label="Forecast range">
         <AppButton
           :variant="forecastRange === 'day' ? 'primary' : 'secondary'"
@@ -177,6 +209,15 @@ function iconUrl(icon: string): string {
       </ul>
       <TemperatureChart :points="chartPoints" />
     </template>
+    <ConfirmModal
+      :open="favoritesLimitOpen"
+      title="Favorites limit"
+      message="You can save up to 5 favorite cities. Remove an existing favorite before adding another city."
+      confirm-label="OK"
+      cancel-label="Close"
+      @confirm="closeFavoritesLimit"
+      @cancel="closeFavoritesLimit"
+    />
   </section>
 </template>
 

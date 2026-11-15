@@ -1,6 +1,7 @@
 import { nextTick } from 'vue';
 import { flushPromises, mount } from '@vue/test-utils';
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { createPinia, setActivePinia } from 'pinia';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { toWeatherChartDatasets } from '../../services/weather/normalizeWeather';
 import { weatherService } from '../../services/weather/weatherService';
 import type { CityLocation } from '../../types/city';
@@ -77,6 +78,10 @@ function forecastFor(location: CityLocation): WeatherForecast {
 }
 
 describe('WeatherWidget forecast range', () => {
+  beforeEach(() => {
+    setActivePinia(createPinia());
+  });
+
   afterEach(() => {
     load.mockReset();
   });
@@ -92,16 +97,16 @@ describe('WeatherWidget forecast range', () => {
     await nextTick();
 
     expect(load).toHaveBeenCalledTimes(1);
-    expect(wrapper.get('button[aria-pressed="true"]').text()).toBe('Day');
+    expect(wrapper.get('.forecast-range button[aria-pressed="true"]').text()).toBe('Day');
     expect(wrapper.text()).toContain('clear sky');
     expect(wrapper.text()).not.toContain('2026-01-16');
     expect(wrapper.getComponent(TemperatureChart).props('points')).toEqual(
       toWeatherChartDatasets(forecast).currentDay,
     );
 
-    await wrapper.get('button[aria-pressed="false"]').trigger('click');
+    await wrapper.get('.forecast-range button[aria-pressed="false"]').trigger('click');
     expect(load).toHaveBeenCalledTimes(1);
-    expect(wrapper.get('button[aria-pressed="true"]').text()).toBe('5 Days');
+    expect(wrapper.get('.forecast-range button[aria-pressed="true"]').text()).toBe('5 Days');
     expect(wrapper.text()).toContain('2026-01-16');
     expect(wrapper.text()).toContain('3°C');
     expect(wrapper.text()).toContain('clouds');
@@ -110,7 +115,7 @@ describe('WeatherWidget forecast range', () => {
       toWeatherChartDatasets(forecast).dailyAverages,
     );
 
-    await wrapper.get('button[aria-pressed="false"]').trigger('click');
+    await wrapper.get('.forecast-range button[aria-pressed="false"]').trigger('click');
     expect(wrapper.text()).not.toContain('2026-01-16');
     expect(wrapper.getComponent(TemperatureChart).props('points')).toEqual([]);
     wrapper.unmount();
@@ -127,11 +132,11 @@ describe('WeatherWidget forecast range', () => {
 
     await flushPromises();
     await nextTick();
-    await second.get('button[aria-pressed="false"]').trigger('click');
+    await second.get('.forecast-range button[aria-pressed="false"]').trigger('click');
 
-    expect(first.get('button[aria-pressed="true"]').text()).toBe('Day');
+    expect(first.get('.forecast-range button[aria-pressed="true"]').text()).toBe('Day');
     expect(first.text()).not.toContain('2026-02-02');
-    expect(second.get('button[aria-pressed="true"]').text()).toBe('5 Days');
+    expect(second.get('.forecast-range button[aria-pressed="true"]').text()).toBe('5 Days');
     expect(second.text()).toContain('2026-02-02');
     expect(second.text()).toContain('8°C');
     expect(second.find('img[alt="clouds"]').exists()).toBe(false);
