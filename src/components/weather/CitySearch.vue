@@ -80,17 +80,51 @@ function cityLabel(city: CityLocation): string {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 0.5rem;
+  gap: var(--space-2);
+  width: 100%;
+}
+
+.city-search label {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
 }
 
 .city-search input {
-  padding: 0.4rem 0.75rem;
+  width: 100%;
+  min-height: var(--control-height);
+  padding: 0 var(--space-3);
   border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  transition: border-color var(--duration-fast);
+}
+
+.city-search input:hover {
+  border-color: var(--color-border-strong);
+}
+
+.city-search input:focus-visible {
+  border-color: var(--color-accent);
 }
 
 .city-search__suggestions {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: var(--space-1);
+  width: 100%;
   margin: 0;
-  padding: 0;
+  padding: var(--space-1);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface-elevated);
+  box-shadow: var(--shadow-md);
   list-style: none;
+}
+
+.city-search__suggestions :deep(.app-button) {
+  justify-content: flex-start;
+  width: 100%;
 }
 </style>

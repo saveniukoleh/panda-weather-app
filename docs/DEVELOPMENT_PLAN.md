@@ -268,13 +268,13 @@ Intermediate subphase between Phase 7 and Phase 8. Completed Phase 7 tasks stay 
 
 ## 8.1. Visual Design
 
-- [ ] 8.1.1. Define design tokens.
-- [ ] 8.1.2. Define typography.
-- [ ] 8.1.3. Define spacing and layout rules.
-- [ ] 8.1.4. Define weather card styles.
-- [ ] 8.1.5. Define button and input styles.
-- [ ] 8.1.6. Define modal styles.
-- [ ] 8.1.7. Define loading and error styles.
+- [x] 8.1.1. Define design tokens.
+- [x] 8.1.2. Define typography.
+- [x] 8.1.3. Define spacing and layout rules.
+- [x] 8.1.4. Define weather card styles.
+- [x] 8.1.5. Define button and input styles.
+- [x] 8.1.6. Define modal styles.
+- [x] 8.1.7. Define loading and error styles.
 
 ## 8.2. Responsive Layout
 
@@ -506,6 +506,12 @@ Intermediate subphase between Phase 7 and Phase 8. Completed Phase 7 tasks stay 
 - `currentDayForecastEntries` now keeps 3-hour `entries` with `timestampUnix >= now` and `timestampUnix <= now + 24 hours`. `toWeatherChartDatasets` still maps that series to `currentDay` with city-offset `HH:MM` labels. The five-day series and `WeatherCard` are unchanged.
 - The short-range control reads `weather.day`: English `24 Hours`, Ukrainian `24 години`. Day / Night theme copy is unchanged.
 - No hourly product, extra request, or synthetic chart point was added. Automated checks were not run.
+
+## 8.1. Visual Design
+
+- Shared Day and Night tokens in `global.css` now cover surfaces, text, borders, accent, feedback colors, radii, shadows, spacing, type scale, and short transitions. Theme switching and persistence are unchanged.
+- Weather and Favorites cards, controls, the confirmation modal, and loading, error, and empty states use that scale. The temperature chart caption reads the existing `chart.label` plus `(°C)` for both ranges.
+- Responsive layout remains for Phase 8.2. Automated checks were not run.
 
 ## Decisions Log
 

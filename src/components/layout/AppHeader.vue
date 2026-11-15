@@ -64,38 +64,57 @@ const { locale, theme } = storeToRefs(settings);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 1rem;
-  padding: 1rem 1.25rem;
-  border-bottom: 1px solid var(--color-muted-border);
+  gap: var(--space-4);
+  padding: var(--space-4) var(--space-5);
+  border-bottom: 1px solid var(--color-separator);
+  background: var(--color-surface);
 }
 
 .app-header__title {
   margin: 0;
-  font-size: 1.25rem;
-  font-weight: 600;
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-tight);
 }
 
 .app-header__controls,
 .app-header__theme,
 .app-header__language {
   display: flex;
-  gap: 0.5rem;
+  align-items: center;
+  gap: var(--space-2);
 }
 
 .app-header__controls {
-  gap: 1rem;
+  gap: var(--space-4);
 }
 
 .app-header__controls button {
+  min-height: var(--control-height);
   border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
   background: var(--color-surface);
   color: var(--color-text);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
   cursor: pointer;
+  transition:
+    background-color var(--duration-fast),
+    border-color var(--duration-fast),
+    color var(--duration-fast);
+}
+
+.app-header__controls button:hover {
+  border-color: var(--color-border-strong);
+  background: var(--color-bg-secondary);
 }
 
 .app-header__theme button {
   display: inline-flex;
-  padding: 0.35rem;
+  align-items: center;
+  justify-content: center;
+  width: var(--control-height);
+  padding: 0;
 }
 
 .app-header__theme svg {
@@ -105,11 +124,13 @@ const { locale, theme } = storeToRefs(settings);
 }
 
 .app-header__language button {
-  padding: 0.35rem 0.75rem;
+  padding: 0 var(--space-3);
 }
 
 .app-header__controls button[aria-pressed='true'] {
-  font-weight: 600;
-  border-color: var(--color-border-strong);
+  border-color: var(--color-accent);
+  background: var(--color-accent-soft);
+  color: var(--color-accent);
+  font-weight: var(--font-weight-semibold);
 }
 </style>

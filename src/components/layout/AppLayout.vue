@@ -31,6 +31,6 @@ const emit = defineEmits<{
 
 .app-layout__main {
   flex: 1;
-  padding: 1.25rem;
+  padding: var(--space-5);
 }
 </style>

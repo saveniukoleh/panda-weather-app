@@ -19,5 +19,7 @@ const text = computed(() => props.label ?? t('loading.default'));
 <style scoped>
 .loading-indicator {
   margin: 0;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
 }
 </style>

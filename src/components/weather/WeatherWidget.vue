@@ -201,8 +201,8 @@ function errorText(code: AppErrorCode): string {
       <WeatherCard :location="forecast.location" :current="forecast.current" />
       <ul v-if="forecastRange === 'fiveDays'" class="daily-forecast">
         <li v-for="day in forecast.daily" :key="day.localDate">
-          <p>{{ day.localDate }}</p>
-          <p>{{ averageTemperature(day.averageTemperatureC) }}</p>
+          <p class="daily-forecast__date">{{ day.localDate }}</p>
+          <p class="daily-forecast__temp">{{ averageTemperature(day.averageTemperatureC) }}</p>
           <img
             v-if="day.condition"
             :src="iconUrl(day.condition.icon)"
@@ -210,7 +210,9 @@ function errorText(code: AppErrorCode): string {
             width="40"
             height="40"
           />
-          <p v-if="conditionText(day) !== ''">{{ conditionText(day) }}</p>
+          <p v-if="conditionText(day) !== ''" class="daily-forecast__condition">
+            {{ conditionText(day) }}
+          </p>
         </li>
       </ul>
       <TemperatureChart :points="chartPoints" />
@@ -232,18 +234,21 @@ function errorText(code: AppErrorCode): string {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 0.75rem;
+  gap: var(--space-3);
+  width: 100%;
 }
 
 .forecast-range {
   display: flex;
-  gap: 0.5rem;
+  flex-wrap: wrap;
+  gap: var(--space-2);
 }
 
 .daily-forecast {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.75rem;
+  gap: var(--space-2);
+  width: 100%;
   margin: 0;
   padding: 0;
   list-style: none;
@@ -253,10 +258,26 @@ function errorText(code: AppErrorCode): string {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 0.25rem;
+  gap: var(--space-1);
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-bg-secondary);
 }
 
 .daily-forecast p {
   margin: 0;
+}
+
+.daily-forecast__date,
+.daily-forecast__condition {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
+}
+
+.daily-forecast__temp {
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-tight);
 }
 </style>

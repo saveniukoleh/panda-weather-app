@@ -78,28 +78,46 @@ function onKeydown(event: KeyboardEvent): void {
 .confirm-modal__backdrop {
   position: fixed;
   inset: 0;
+  z-index: 20;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgb(0 0 0 / 40%);
+  padding: var(--space-4);
+  background: var(--color-overlay);
 }
 
 .confirm-modal {
+  width: 100%;
   max-width: 28rem;
-  padding: 1.25rem;
-  background: var(--color-surface);
+  padding: var(--space-5);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface-elevated);
   color: var(--color-text);
+  box-shadow: var(--shadow-lg);
   outline: none;
 }
 
 .confirm-modal h2,
 .confirm-modal p {
-  margin: 0 0 0.75rem;
+  margin: 0 0 var(--space-3);
+}
+
+.confirm-modal h2 {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-tight);
+}
+
+.confirm-modal p {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
 }
 
 .confirm-modal__actions {
   display: flex;
   justify-content: flex-end;
-  gap: 0.5rem;
+  gap: var(--space-2);
+  margin-top: var(--space-4);
 }
 </style>

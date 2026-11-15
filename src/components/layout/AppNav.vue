@@ -74,21 +74,37 @@ function onTabKeydown(event: KeyboardEvent): void {
 <style scoped>
 .app-nav {
   display: flex;
-  gap: 0.5rem;
-  padding: 0.75rem 1.25rem;
-  border-bottom: 1px solid var(--color-muted-border);
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-5);
+  border-bottom: 1px solid var(--color-separator);
+  background: var(--color-surface);
 }
 
 .app-nav button {
-  padding: 0.35rem 0.75rem;
+  min-height: var(--control-height);
+  padding: 0 var(--space-3);
   border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
   background: var(--color-surface);
   color: var(--color-text);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
   cursor: pointer;
+  transition:
+    background-color var(--duration-fast),
+    border-color var(--duration-fast),
+    color var(--duration-fast);
+}
+
+.app-nav button:hover {
+  border-color: var(--color-border-strong);
+  background: var(--color-bg-secondary);
 }
 
 .app-nav button[aria-selected='true'] {
-  font-weight: 600;
-  border-color: var(--color-border-strong);
+  border-color: var(--color-accent);
+  background: var(--color-accent-soft);
+  color: var(--color-accent);
+  font-weight: var(--font-weight-semibold);
 }
 </style>
