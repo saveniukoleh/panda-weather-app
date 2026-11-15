@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { computed, useId, watch } from 'vue';
+import { computed, ref, useId, watch } from 'vue';
+import AppButton from '../common/AppButton.vue';
 import ErrorMessage from '../common/ErrorMessage.vue';
 import LoadingIndicator from '../common/LoadingIndicator.vue';
 import { useCitySearch } from '../../composables/useCitySearch';
@@ -7,6 +8,7 @@ import { useWeatherWidget } from '../../composables/useWeatherWidget';
 import { toWeatherChartDatasets } from '../../services/weather/normalizeWeather';
 import type { WeatherLanguage } from '../../types/api';
 import type { CityLocation } from '../../types/city';
+import type { DailyForecast } from '../../types/weather';
 import CitySearch from './CitySearch.vue';
 import TemperatureChart from './TemperatureChart.vue';
 import WeatherCard from './WeatherCard.vue';
@@ -93,9 +95,34 @@ function onSelect(city: CityLocation): void {
   select(city);
 }
 
-const chartPoints = computed(() =>
-  forecast.value === null ? [] : toWeatherChartDatasets(forecast.value).currentDay,
+type ForecastRange = 'day' | 'fiveDays';
+
+const forecastRange = ref<ForecastRange>('day');
+
+const chartDatasets = computed(() =>
+  forecast.value === null ? null : toWeatherChartDatasets(forecast.value),
 );
+
+const chartPoints = computed(() => {
+  if (chartDatasets.value === null) return [];
+  return forecastRange.value === 'day'
+    ? chartDatasets.value.currentDay
+    : chartDatasets.value.dailyAverages;
+});
+
+function averageTemperature(value: number): string {
+  if (!Number.isFinite(value)) return '—';
+  return `${Math.round(value)}°C`;
+}
+
+function conditionText(day: DailyForecast): string {
+  const description = day.condition?.description.trim() ?? '';
+  return description;
+}
+
+function iconUrl(icon: string): string {
+  return `https://openweathermap.org/img/wn/${encodeURIComponent(icon)}@2x.png`;
+}
 </script>
 
 <template>
@@ -117,7 +144,37 @@ const chartPoints = computed(() =>
       @retry="reload"
     />
     <template v-else-if="forecast">
+      <div class="forecast-range" role="group" aria-label="Forecast range">
+        <AppButton
+          :variant="forecastRange === 'day' ? 'primary' : 'secondary'"
+          :aria-pressed="forecastRange === 'day'"
+          @click="forecastRange = 'day'"
+        >
+          Day
+        </AppButton>
+        <AppButton
+          :variant="forecastRange === 'fiveDays' ? 'primary' : 'secondary'"
+          :aria-pressed="forecastRange === 'fiveDays'"
+          @click="forecastRange = 'fiveDays'"
+        >
+          5 Days
+        </AppButton>
+      </div>
       <WeatherCard :location="forecast.location" :current="forecast.current" />
+      <ul v-if="forecastRange === 'fiveDays'" class="daily-forecast">
+        <li v-for="day in forecast.daily" :key="day.localDate">
+          <p>{{ day.localDate }}</p>
+          <p>{{ averageTemperature(day.averageTemperatureC) }}</p>
+          <img
+            v-if="day.condition"
+            :src="iconUrl(day.condition.icon)"
+            :alt="conditionText(day)"
+            width="40"
+            height="40"
+          />
+          <p v-if="conditionText(day) !== ''">{{ conditionText(day) }}</p>
+        </li>
+      </ul>
       <TemperatureChart :points="chartPoints" />
     </template>
   </section>
@@ -129,5 +186,30 @@ const chartPoints = computed(() =>
   flex-direction: column;
   align-items: flex-start;
   gap: 0.75rem;
+}
+
+.forecast-range {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.daily-forecast {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.daily-forecast li {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.25rem;
+}
+
+.daily-forecast p {
+  margin: 0;
 }
 </style>

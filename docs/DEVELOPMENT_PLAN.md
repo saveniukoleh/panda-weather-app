@@ -178,12 +178,12 @@ Task statuses:
 
 ## 5.3. Five-Day Forecast
 
-- [ ] 5.3.1. Implement the Day / 5 Days switch.
-- [ ] 5.3.2. Group forecast entries by local calendar day.
-- [ ] 5.3.3. Calculate daily average temperature.
-- [ ] 5.3.4. Display daily weather cards.
-- [ ] 5.3.5. Create the five-day temperature chart.
-- [ ] 5.3.6. Verify date and timezone boundaries.
+- [x] 5.3.1. Implement the Day / 5 Days switch.
+- [x] 5.3.2. Group forecast entries by local calendar day.
+- [x] 5.3.3. Calculate daily average temperature.
+- [x] 5.3.4. Display daily weather cards.
+- [x] 5.3.5. Create the five-day temperature chart.
+- [x] 5.3.6. Verify date and timezone boundaries.
 
 ---
 
@@ -451,7 +451,13 @@ Moved into Phase 4.3 so the default dashboard widget can load a city on startup.
 
 - `WeatherWidget` passes `toWeatherChartDatasets(forecast).currentDay` into `TemperatureChart`. Points are that city's forecast entries for the current calendar day, using `timezoneOffsetSeconds`. Labels are `HH:MM`. Temperatures stay in Celsius. No extra request is made.
 - A new city clears the previous forecast before the next result arrives, so the chart unmounts and cannot keep the previous city's points. Each widget computes points from its own forecast.
-- If the current city-local day has no valid entries, the chart receives an empty list and keeps the existing empty state. Entries with a non-finite timestamp or temperature are already dropped during normalization. Phase 5.3 was not started.
+- If the current city-local day has no valid entries, the chart receives an empty list and keeps the existing empty state. Entries with a non-finite timestamp or temperature are already dropped during normalization.
+
+## 5.3. Five-Day Forecast
+
+- Each `WeatherWidget` keeps its own Day / 5 Days mode, defaulting to Day. Switching modes does not request weather again. Day mode still shows the current card and the current-day chart.
+- 5 Days mode lists `forecast.daily` in its existing order: local date, average °C, and the normalized condition and icon when present. The same `TemperatureChart` receives `dailyAverages`. Missing days are not invented.
+- Grouping, averages, labels, and timezone boundaries stay in `normalizeWeather`. A city change still clears the forecast before the next result, so the previous city's days cannot remain on screen.
 
 ## Decisions Log
 
