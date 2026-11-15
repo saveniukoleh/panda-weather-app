@@ -88,8 +88,8 @@ Owns:
 
 - Application bootstrap in `main.ts`.
 - Root `App.vue` composition of layout and the active view.
-- Header, language control, and Weather / Favorites tab switching.
-- Shared settings (selected language; later Day / Night display if implemented).
+- Header, language control, Day / Night theme control, and Weather / Favorites tab switching.
+- Shared settings: selected language and Day / Night theme. Day is the light theme and Night is the dark theme. The theme is a user setting, not derived from weather or time, and it is independent of each widget's Day / 5 Days forecast switch.
 - Global CSS and design-unrelated document defaults.
 
 Does not own:
@@ -352,7 +352,7 @@ Pinia stores:
 | --- | --- | --- |
 | `weatherWidgetsStore` | Dashboard `WeatherWidgetState[]` | None |
 | `favoritesStore` | `FavoritesState` | localStorage, cities only |
-| `settingsStore` | `locale: LocaleCode` (and later Day / Night if defined) | localStorage |
+| `settingsStore` | `locale: LocaleCode`; `theme: 'day' \| 'night'` | localStorage (`panda-weather.locale`, `panda-weather.theme`). Missing, invalid, or unreadable values fall back to `en` and `day` |
 
 Do not duplicate the same city list or the same forecast in multiple stores. Dashboard widgets and favorite cities may refer to the same `CityLocation` value object, but each view keeps its own forecast runtime state.
 

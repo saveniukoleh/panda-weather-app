@@ -16,6 +16,11 @@ const uk = {
     en: 'EN',
     uk: 'UK',
   },
+  theme: {
+    label: 'Тема',
+    day: 'День',
+    night: 'Ніч',
+  },
   dashboard: {
     label: 'Панель погоди',
     title: 'Погода',

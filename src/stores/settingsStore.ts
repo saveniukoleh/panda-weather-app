@@ -3,8 +3,12 @@ import { defineStore } from 'pinia';
 import type { LocaleCode } from '../types/api';
 
 export const LOCALE_STORAGE_KEY = 'panda-weather.locale';
+export const THEME_STORAGE_KEY = 'panda-weather.theme';
+
+export type DisplayTheme = 'day' | 'night';
 
 const LOCALES: readonly LocaleCode[] = ['en', 'uk'];
+const THEMES: readonly DisplayTheme[] = ['day', 'night'];
 
 function storageOrNull(): Storage | null {
   try {
@@ -48,8 +52,35 @@ function persistLocale(locale: LocaleCode): void {
   }
 }
 
+function isDisplayTheme(value: string): value is DisplayTheme {
+  return THEMES.some((theme) => theme === value);
+}
+
+export function readStoredTheme(): DisplayTheme {
+  const storage = storageOrNull();
+  if (storage === null) return 'day';
+  try {
+    const raw = storage.getItem(THEME_STORAGE_KEY);
+    if (raw !== null && isDisplayTheme(raw)) return raw;
+    return 'day';
+  } catch {
+    return 'day';
+  }
+}
+
+function persistTheme(theme: DisplayTheme): void {
+  const storage = storageOrNull();
+  if (storage === null) return;
+  try {
+    storage.setItem(THEME_STORAGE_KEY, theme);
+  } catch {
+    // The in-memory theme stays usable when storage rejects the write.
+  }
+}
+
 export const useSettingsStore = defineStore('settings', () => {
   const locale = ref<LocaleCode>(readStoredLocale());
+  const theme = ref<DisplayTheme>(readStoredTheme());
 
   watch(
     locale,
@@ -59,9 +90,21 @@ export const useSettingsStore = defineStore('settings', () => {
     { flush: 'sync' },
   );
 
+  watch(
+    theme,
+    (value) => {
+      persistTheme(value);
+    },
+    { flush: 'sync' },
+  );
+
   function setLocale(next: LocaleCode): void {
     locale.value = next;
   }
 
-  return { locale, setLocale };
+  function setTheme(next: DisplayTheme): void {
+    theme.value = next;
+  }
+
+  return { locale, setLocale, theme, setTheme };
 });

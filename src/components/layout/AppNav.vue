@@ -76,18 +76,19 @@ function onTabKeydown(event: KeyboardEvent): void {
   display: flex;
   gap: 0.5rem;
   padding: 0.75rem 1.25rem;
-  border-bottom: 1px solid #ddd;
+  border-bottom: 1px solid var(--color-muted-border);
 }
 
 .app-nav button {
   padding: 0.35rem 0.75rem;
-  border: 1px solid #ccc;
-  background: #fff;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text);
   cursor: pointer;
 }
 
 .app-nav button[aria-selected='true'] {
   font-weight: 600;
-  border-color: #111;
+  border-color: var(--color-border-strong);
 }
 </style>

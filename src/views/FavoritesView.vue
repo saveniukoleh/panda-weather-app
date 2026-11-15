@@ -53,6 +53,6 @@ function cityKey(city: CityLocation): string {
 
 .favorites__item {
   padding: 0.75rem;
-  border: 1px solid #ddd;
+  border: 1px solid var(--color-muted-border);
 }
 </style>

@@ -231,8 +231,8 @@ Task statuses:
 
 ## 7.2. Day / Night Display
 
-- [ ] 7.2.1. Finalize the meaning of Day / Night behavior.
-- [ ] 7.2.2. Implement the selected display mode.
+- [x] 7.2.1. Finalize the meaning of Day / Night behavior.
+- [x] 7.2.2. Implement the selected display mode.
 - [ ] 7.2.3. Verify behavior across weather widgets.
 - [ ] 7.2.4. Verify compatibility with localization.
 
@@ -477,6 +477,12 @@ Moved into Phase 4.3 so the default dashboard widget can load a city on startup.
 - Replaced interface copy with those catalogs, including errors mapped from `AppError.code`. The header switches language immediately. Provider condition text is left unchanged.
 - Dashboard and favorite widgets receive the selected `LocaleCode`. The existing per-widget reload aborts the previous request and ignores a stale response, so descriptions follow the new language.
 - Added tests for locale persistence and for passing the selected locale into a favorite weather request.
+
+## 7.2. Day / Night Display
+
+- Day / Night is a global theme: Day is light and Night is dark. It is a user setting, independent of weather, time, and each widget's Day / 5 Days switch.
+- `settingsStore` persists `panda-weather.theme` and falls back to `day` when the value is missing, invalid, or localStorage is unavailable. The header switches it immediately. `App` sets `data-theme` on the document, and shared CSS variables recolor the existing interface, including both tabs.
+- Theme labels are in the English and Ukrainian catalogs. Runtime checks were not run in this subphase.
 
 ## Decisions Log
 

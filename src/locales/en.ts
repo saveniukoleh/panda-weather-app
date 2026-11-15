@@ -12,6 +12,11 @@ const en = {
     en: 'EN',
     uk: 'UK',
   },
+  theme: {
+    label: 'Theme',
+    day: 'Day',
+    night: 'Night',
+  },
   dashboard: {
     label: 'Weather dashboard',
     title: 'Weather',

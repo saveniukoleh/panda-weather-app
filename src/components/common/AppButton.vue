@@ -43,8 +43,9 @@ function onClick(event: MouseEvent): void {
   align-items: center;
   gap: 0.35rem;
   padding: 0.4rem 0.75rem;
-  border: 1px solid #ccc;
-  background: #fff;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text);
   cursor: pointer;
 }
 
@@ -54,14 +55,14 @@ function onClick(event: MouseEvent): void {
 }
 
 .app-button--primary {
-  border-color: #111;
-  background: #111;
-  color: #fff;
+  border-color: var(--color-border-strong);
+  background: var(--color-border-strong);
+  color: var(--color-on-strong);
 }
 
 .app-button--danger {
-  border-color: #8a1f1f;
-  color: #8a1f1f;
+  border-color: var(--color-danger);
+  color: var(--color-danger);
 }
 
 .app-button__status {

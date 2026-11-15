@@ -85,7 +85,7 @@ function cityLabel(city: CityLocation): string {
 
 .city-search input {
   padding: 0.4rem 0.75rem;
-  border: 1px solid #ccc;
+  border: 1px solid var(--color-border);
 }
 
 .city-search__suggestions {

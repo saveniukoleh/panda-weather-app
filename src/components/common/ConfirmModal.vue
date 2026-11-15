@@ -87,7 +87,8 @@ function onKeydown(event: KeyboardEvent): void {
 .confirm-modal {
   max-width: 28rem;
   padding: 1.25rem;
-  background: #fff;
+  background: var(--color-surface);
+  color: var(--color-text);
   outline: none;
 }
 

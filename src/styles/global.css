@@ -11,6 +11,15 @@ body {
 }
 
 html {
+  --color-text: #111;
+  --color-bg: #fff;
+  --color-surface: #fff;
+  --color-border: #ccc;
+  --color-border-strong: #111;
+  --color-muted-border: #ddd;
+  --color-danger: #8a1f1f;
+  --color-on-strong: #fff;
+  color-scheme: light;
   font-family:
     system-ui,
     -apple-system,
@@ -23,10 +32,22 @@ html {
   -webkit-text-size-adjust: 100%;
 }
 
+html[data-theme='night'] {
+  --color-text: #f3f4f6;
+  --color-bg: #111827;
+  --color-surface: #1f2937;
+  --color-border: #4b5563;
+  --color-border-strong: #e5e7eb;
+  --color-muted-border: #374151;
+  --color-danger: #f0a8a8;
+  --color-on-strong: #111827;
+  color-scheme: dark;
+}
+
 body {
   min-height: 100vh;
-  color: #111;
-  background-color: #fff;
+  color: var(--color-text);
+  background-color: var(--color-bg);
 }
 
 img,
@@ -40,4 +61,6 @@ input,
 select,
 textarea {
   font: inherit;
+  color: inherit;
+  background-color: var(--color-surface);
 }

@@ -8,7 +8,9 @@ import {
   PointElement,
   Tooltip,
 } from 'chart.js';
+import { storeToRefs } from 'pinia';
 import { nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue';
+import { useSettingsStore } from '../../stores/settingsStore';
 import type { TemperatureChartPoint } from '../../types/weather';
 
 Chart.register(LineController, LineElement, PointElement, CategoryScale, LinearScale, Tooltip);
@@ -18,6 +20,12 @@ const props = defineProps<{
 }>();
 
 const canvas = ref<HTMLCanvasElement | null>(null);
+const { theme } = storeToRefs(useSettingsStore());
+
+function chartTextColor(): string {
+  const color = getComputedStyle(document.documentElement).getPropertyValue('--color-text').trim();
+  return color || '#111';
+}
 
 let chart: Chart<'line', number[], string> | null = null;
 let syncId = 0;
@@ -60,6 +68,7 @@ async function syncChart(): Promise<void> {
       },
       options: {
         responsive: true,
+        color: chartTextColor(),
       },
     });
     return;
@@ -68,6 +77,7 @@ async function syncChart(): Promise<void> {
   chart.data.labels = labels();
   const dataset = chart.data.datasets[0];
   if (dataset) dataset.data = temperatures();
+  chart.options.color = chartTextColor();
   chart.update();
 }
 
@@ -76,6 +86,8 @@ watch(
   () => void syncChart(),
   { deep: true },
 );
+
+watch(theme, () => void syncChart());
 
 onMounted(() => {
   void syncChart();

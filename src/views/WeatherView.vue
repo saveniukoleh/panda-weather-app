@@ -96,6 +96,6 @@ function initialLocationFor(id: string): CityLocation | null {
   align-items: flex-start;
   gap: 0.75rem;
   padding: 0.75rem;
-  border: 1px solid #ddd;
+  border: 1px solid var(--color-muted-border);
 }
 </style>

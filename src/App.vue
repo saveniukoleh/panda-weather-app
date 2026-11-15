@@ -9,7 +9,7 @@ import FavoritesView from './views/FavoritesView.vue';
 import WeatherView from './views/WeatherView.vue';
 
 const activeTab = ref<AppTab>('weather');
-const { locale } = storeToRefs(useSettingsStore());
+const { locale, theme } = storeToRefs(useSettingsStore());
 const { locale: i18nLocale, t } = useI18n();
 
 watch(
@@ -18,6 +18,14 @@ watch(
     i18nLocale.value = value;
     document.documentElement.lang = value;
     document.title = t('app.title');
+  },
+  { immediate: true },
+);
+
+watch(
+  theme,
+  (value) => {
+    document.documentElement.dataset.theme = value;
   },
   { immediate: true },
 );

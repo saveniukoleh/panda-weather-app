@@ -119,9 +119,11 @@ These requirements are marked as optional in the original assignment.
 
 #### 2.2.5. Day / Night Display
 
-- Implement the Day / Night display functionality described in the assignment.
-- Before implementation, define whether this means a visual theme switch, a weather-data display mode, or both.
-- Keep this behavior independent from the Day / 5 Days forecast switch.
+- Day / Night is a global visual theme. Day is light and Night is dark.
+- The user chooses the theme. It is not derived from the weather or the time of day.
+- The theme applies to the whole application, including Weather and Favorites.
+- Keep this behavior independent from each widget's Day / 5 Days forecast switch.
+- Persist the selected theme and default to Day when no valid preference is stored.
 
 #### 2.2.6. Additional Functionality
 
