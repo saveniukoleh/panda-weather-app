@@ -201,10 +201,10 @@ Task statuses:
 
 ## 6.2. Favorites Persistence
 
-- [ ] 6.2.1. Implement localStorage persistence.
-- [ ] 6.2.2. Restore favorites on application startup.
-- [ ] 6.2.3. Handle malformed stored data.
-- [ ] 6.2.4. Handle unavailable localStorage.
+- [x] 6.2.1. Implement localStorage persistence.
+- [x] 6.2.2. Restore favorites on application startup.
+- [x] 6.2.3. Handle malformed stored data.
+- [x] 6.2.4. Handle unavailable localStorage.
 
 ## 6.3. Favorites Interface
 
