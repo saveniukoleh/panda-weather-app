@@ -41,7 +41,8 @@ Requirements are divided into mandatory functionality and optional enhancements 
 
 #### 2.1.4. Temperature Chart
 
-- Display a temperature chart for the current day.
+- Display a temperature chart for the next 24 hours, starting at the current moment.
+- Include existing OpenWeatherMap 3-hour forecast entries whose Unix timestamps are greater than or equal to the current time and less than or equal to that time plus 24 hours. This range is not the current calendar day and is not hourly data. Show only the points the forecast provides, in chronological order, with city-local time labels.
 - Use a JavaScript charting library such as Chart.js.
 - Do not use vue-chartjs or another Vue wrapper for Chart.js.
 - Use the Chart.js JavaScript API directly.
@@ -73,7 +74,7 @@ Note: The exact availability and granularity of hourly forecast data must be ver
 - Visually indicate whether a city is already a favorite.
 - Display favorite cities as weather widgets.
 - Favorite widgets must not contain a city search input.
-- Favorite widgets must support Day / 5 Days switching.
+- Favorite widgets must support 24 Hours / 5 Days switching.
 - Store favorites in localStorage.
 - Maximum number of favorite cities: 5.
 - If the limit is reached, display a modal explaining that a favorite must be removed before adding another city.
@@ -91,7 +92,7 @@ These requirements are marked as optional in the original assignment.
 
 #### 2.2.1. Five-Day Forecast
 
-- Add a Day / 5 Days display switch.
+- Add a 24 Hours / 5 Days display switch. The 24-hour range uses available 3-hour forecast entries, not hourly data. The five-day range stays the first five city-local dates.
 - Display a weather card for each of the first five available local forecast days.
 - Calculate daily average temperature from available forecast measurements.
 - Display a temperature chart by day.
@@ -122,7 +123,7 @@ These requirements are marked as optional in the original assignment.
 - Day / Night is a global visual theme. Day is light and Night is dark.
 - The user chooses the theme. It is not derived from the weather or the time of day.
 - The theme applies to the whole application, including Weather and Favorites.
-- Keep this behavior independent from each widget's Day / 5 Days forecast switch.
+- Keep this behavior independent from each widget's 24 Hours / 5 Days forecast switch.
 - Persist the selected theme and default to Day when no valid preference is stored.
 
 #### 2.2.6. Additional Functionality

@@ -37,7 +37,7 @@ const en = {
     addFavorite: 'Add to favorites',
     removeFavorite: 'Remove from favorites',
     range: 'Forecast range',
-    day: 'Day',
+    day: '24 Hours',
     fiveDays: '5 Days',
     limitTitle: 'Favorites limit',
     limitMessage:

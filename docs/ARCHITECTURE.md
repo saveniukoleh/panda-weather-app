@@ -89,7 +89,7 @@ Owns:
 - Application bootstrap in `main.ts`.
 - Root `App.vue` composition of layout and the active view.
 - Header, language control, Day / Night theme control, and Weather / Favorites tab switching.
-- Shared settings: selected language and Day / Night theme. Day is the light theme and Night is the dark theme. The theme is a user setting, not derived from weather or time, and it is independent of each widget's Day / 5 Days forecast switch.
+- Shared settings: selected language and Day / Night theme. Day is the light theme and Night is the dark theme. The theme is a user setting, not derived from weather or time, and it is independent of each widget's 24 Hours / 5 Days forecast switch.
 - Global CSS and design-unrelated document defaults.
 
 Does not own:
@@ -106,7 +106,7 @@ Owns:
 - Independent widget identity and state.
 - City autocomplete selection for a single widget.
 - Requesting and displaying current-day weather and forecast for the selected city.
-- Day / 5 Days switching per widget.
+- 24 Hours / 5 Days switching per widget. The short range is a rolling 24-hour window of existing 3-hour forecast entries, not hourly data.
 - Widget add and remove flows, including the last-widget rule.
 
 Does not own:
@@ -183,7 +183,7 @@ Components stay small. Presentation components do not call `fetch` or import Ope
 | `WeatherWidget` | `components/weather` | One independent weather unit: search or locked city, card, chart, mode switch, favorite/remove | Share state with other widgets |
 | `CitySearch` | `components/weather` | Debounced autocomplete and selection | Apply selection to more than one widget |
 | `WeatherCard` | `components/weather` | Current or selected-day snapshot | Request weather |
-| `ForecastModeSwitch` | `components/weather` | Day / 5 Days for that widget only | Change other widgets |
+| `ForecastModeSwitch` | `components/weather` | 24 Hours / 5 Days for that widget only | Change other widgets |
 | `TemperatureChart` | `components/charts` | Chart.js lifecycle for one canvas | Use vue-chartjs |
 | `AppButton`, `LoadingIndicator`, `ErrorMessage`, `ConfirmModal`, `EmptyState` | `components/common` | Shared UI primitives | Encode weather rules |
 
@@ -275,13 +275,13 @@ Identity and grouping rules:
 
 - A city is unique by `lat` and `lon`. Duplicate favorites use that pair, not the display name.
 - `localDate` is `YYYY-MM-DD` in the **city** timezone (`timezoneOffsetSeconds`), not the browser timezone.
-- Current-day chart data is the `entries` whose local calendar date is the city’s current local date.
+- The short-range chart series (`currentDay`) is the `entries` with `timestampUnix` greater than or equal to the current Unix time and less than or equal to that time plus 24 hours. Entries stay in their existing chronological order. No temperatures are interpolated. The series uses the provider’s 3-hour slots, not hourly data. The browser timezone is not used.
 - Daily average temperature is the arithmetic mean of `temperatureC` for entries on that local date. A local date with no entries is omitted.
 - `daily.condition` is the condition of the entry nearest 12:00 in the city offset, or `null` when none of those entries has a condition.
 - Missing optional fields are `null`. UI hides unavailable parameters instead of inventing values.
 - Units are metric (Celsius). `windSpeed` is meters per second, the unit OpenWeatherMap returns for `units=metric`.
 - `precipitationProbability` is the provider `pop` value from 0 to 1, or `null` when the slot omits it.
-- Chart datasets are `{ label, temperatureC }` points. Current-day labels are `HH:mm` in the city offset. Daily labels are `localDate`. They are not Chart.js objects.
+- Chart datasets are `{ label, temperatureC }` points. Short-range labels are `HH:mm` in the city offset. Daily labels are `localDate`. They are not Chart.js objects.
 - The provider timezone is a fixed seconds-east-of-UTC offset on the response, not an IANA zone. Daylight-saving rules are not applied per timestamp beyond that offset.
 
 ## 7. Weather Widget State
@@ -393,7 +393,7 @@ Vue components and Pinia stores do not call OpenWeatherMap or the Worker directl
 - **Input:** `{ location: CityLocation; locale: LocaleCode; signal?: AbortSignal }`.
 - **Output:** `WeatherForecast`. `location` is the requested `CityLocation`. `current` is the `/weather` snapshot. `entries` are 3-hour `/forecast` slots. `daily` groups those slots by city-local date and keeps the first five dates.
 - Current weather is required. A forecast slot is the next 3-hour point, not the live observation, and it does not fill `WeatherSnapshot` (`feelsLikeC`, `humidity`, `windSpeed`, `pressure`).
-- `currentDayForecastEntries` and `toWeatherChartDatasets` select the city’s current local date from `entries` and return numeric chart points. They do not create a Chart.js instance. The forecast list does not include earlier slots from that local day, so the Day chart shows only the slots that remain. `dailyAverages` uses the same five `daily` dates. The three-hour `entries` list is not trimmed.
+- `currentDayForecastEntries` and `toWeatherChartDatasets` select 3-hour `entries` from the current Unix time through that time plus 24 hours, inclusive, and return numeric chart points. They do not create a Chart.js instance, add hourly points, or use the browser timezone. `dailyAverages` uses the same five `daily` dates. The stored three-hour `entries` list is not trimmed.
 - Local dates add `city.timezone` seconds to the Unix timestamp and format the result with UTC calendar fields.
 - **Throws:** `AppRequestError` from either request. `AbortError` propagates. `load` has no shared mutable result: a failure cannot replace another call’s forecast. It does not return current weather with a fabricated forecast, or the reverse.
 - Slots with a non-finite timestamp or temperature are skipped. Optional gaps stay `null`. An empty `list` yields empty `entries`, `daily`, and chart series.

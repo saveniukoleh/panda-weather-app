@@ -11,6 +11,7 @@ import type {
 
 const NOON_MINUTES = 12 * 60;
 const MAX_DISPLAYED_DAILY_DAYS = 5;
+const ROLLING_WINDOW_SECONDS = 24 * 60 * 60;
 
 export function normalizeCurrentWeather(payload: CurrentWeatherPayload): WeatherSnapshot {
   return {
@@ -54,9 +55,9 @@ export function currentDayForecastEntries(
   forecast: WeatherForecast,
   nowUnix: number = unixNow(),
 ): ForecastEntry[] {
-  const today = localCalendarDate(nowUnix, forecast.timezoneOffsetSeconds);
+  const endUnix = nowUnix + ROLLING_WINDOW_SECONDS;
   return forecast.entries.filter(
-    (entry) => localCalendarDate(entry.timestampUnix, forecast.timezoneOffsetSeconds) === today,
+    (entry) => entry.timestampUnix >= nowUnix && entry.timestampUnix <= endUnix,
   );
 }
 

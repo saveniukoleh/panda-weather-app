@@ -249,6 +249,21 @@ Moved into Phase 4.3 so the default dashboard widget can load a city on startup.
 
 ---
 
+# PHASE 7.5. ROLLING 24-HOUR FORECAST
+
+Intermediate subphase between Phase 7 and Phase 8. Completed Phase 7 tasks stay complete and are not reopened. The short-range chart uses available 3-hour forecast entries, not hourly data.
+
+## 7.5.1. Rolling Window
+
+- [x] 7.5.1. Include forecast entries from the current Unix time through that time plus 24 hours, inclusive.
+- [x] 7.5.2. Keep those entries in chronological order and do not interpolate, duplicate, or add forecast requests.
+- [x] 7.5.3. Label points with city-local `HH:MM` from the existing timezone offset.
+- [x] 7.5.4. Leave the five-day list, its five-date limit, and the current weather card unchanged.
+- [x] 7.5.5. Rename the short-range control to `24 Hours` / `24 години`.
+- [x] 7.5.6. Record the rolling window in `PROJECT_SPEC.md` and `ARCHITECTURE.md`.
+
+---
+
 # PHASE 8. UI AND RESPONSIVE DESIGN
 
 ## 8.1. Visual Design
@@ -485,6 +500,12 @@ Moved into Phase 4.3 so the default dashboard widget can load a city on startup.
 - The product name is `Panda Weather` in both catalogs and the document title.
 - The displayed five-day list and its chart use the first five city-local dates from `daily`. The three-hour entries used by Day mode are unchanged. The Day chart shows only forecast slots that remain on the city's local date; a single point late in that day is the provider data, not a missing chart update.
 - Manual checks confirmed theme switching and persistence, both tabs, EN/UK in both themes, and independence from Day / 5 Days. Automated checks and live provider description checks were not run.
+
+## 7.5. Rolling 24-Hour Forecast
+
+- `currentDayForecastEntries` now keeps 3-hour `entries` with `timestampUnix >= now` and `timestampUnix <= now + 24 hours`. `toWeatherChartDatasets` still maps that series to `currentDay` with city-offset `HH:MM` labels. The five-day series and `WeatherCard` are unchanged.
+- The short-range control reads `weather.day`: English `24 Hours`, Ukrainian `24 години`. Day / Night theme copy is unchanged.
+- No hourly product, extra request, or synthetic chart point was added. Automated checks were not run.
 
 ## Decisions Log
 
