@@ -19,9 +19,29 @@ const { locale, theme } = storeToRefs(settings);
           :key="mode"
           type="button"
           :aria-pressed="theme === mode"
+          :aria-label="$t(`theme.${mode}`)"
+          :title="$t(`theme.${mode}`)"
           @click="settings.setTheme(mode)"
         >
-          {{ $t(`theme.${mode}`) }}
+          <svg v-if="mode === 'day'" viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="2" />
+            <path
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"
+            />
+          </svg>
+          <svg v-else viewBox="0 0 24 24" aria-hidden="true">
+            <path
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linejoin="round"
+              d="M20 15.5A8 8 0 0 1 8.5 4 7 7 0 1 0 20 15.5z"
+            />
+          </svg>
         </button>
       </div>
       <div class="app-header__language" role="group" :aria-label="$t('language.label')">
@@ -67,11 +87,25 @@ const { locale, theme } = storeToRefs(settings);
 }
 
 .app-header__controls button {
-  padding: 0.35rem 0.75rem;
   border: 1px solid var(--color-border);
   background: var(--color-surface);
   color: var(--color-text);
   cursor: pointer;
+}
+
+.app-header__theme button {
+  display: inline-flex;
+  padding: 0.35rem;
+}
+
+.app-header__theme svg {
+  display: block;
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.app-header__language button {
+  padding: 0.35rem 0.75rem;
 }
 
 .app-header__controls button[aria-pressed='true'] {

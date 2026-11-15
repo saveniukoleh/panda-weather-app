@@ -391,9 +391,9 @@ Vue components and Pinia stores do not call OpenWeatherMap or the Worker directl
 
 - Calls `requestCurrentWeather` and `requestForecast` together. It does not send `appid` or call OpenWeatherMap.
 - **Input:** `{ location: CityLocation; locale: LocaleCode; signal?: AbortSignal }`.
-- **Output:** `WeatherForecast`. `location` is the requested `CityLocation`. `current` is the `/weather` snapshot. `entries` are 3-hour `/forecast` slots. `daily` groups those slots by city-local date.
+- **Output:** `WeatherForecast`. `location` is the requested `CityLocation`. `current` is the `/weather` snapshot. `entries` are 3-hour `/forecast` slots. `daily` groups those slots by city-local date and keeps the first five dates.
 - Current weather is required. A forecast slot is the next 3-hour point, not the live observation, and it does not fill `WeatherSnapshot` (`feelsLikeC`, `humidity`, `windSpeed`, `pressure`).
-- `currentDayForecastEntries` and `toWeatherChartDatasets` select the city’s current local date from `entries` and return numeric chart points. They do not create a Chart.js instance.
+- `currentDayForecastEntries` and `toWeatherChartDatasets` select the city’s current local date from `entries` and return numeric chart points. They do not create a Chart.js instance. The forecast list does not include earlier slots from that local day, so the Day chart shows only the slots that remain. `dailyAverages` uses the same five `daily` dates. The three-hour `entries` list is not trimmed.
 - Local dates add `city.timezone` seconds to the Unix timestamp and format the result with UTC calendar fields.
 - **Throws:** `AppRequestError` from either request. `AbortError` propagates. `load` has no shared mutable result: a failure cannot replace another call’s forecast. It does not return current weather with a fabricated forecast, or the reverse.
 - Slots with a non-finite timestamp or temperature are skipped. Optional gaps stay `null`. An empty `list` yields empty `entries`, `daily`, and chart series.

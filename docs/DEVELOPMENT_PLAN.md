@@ -233,8 +233,8 @@ Task statuses:
 
 - [x] 7.2.1. Finalize the meaning of Day / Night behavior.
 - [x] 7.2.2. Implement the selected display mode.
-- [ ] 7.2.3. Verify behavior across weather widgets.
-- [ ] 7.2.4. Verify compatibility with localization.
+- [x] 7.2.3. Verify behavior across weather widgets.
+- [x] 7.2.4. Verify compatibility with localization.
 
 ## 7.3. Automatic Location
 
@@ -481,8 +481,10 @@ Moved into Phase 4.3 so the default dashboard widget can load a city on startup.
 ## 7.2. Day / Night Display
 
 - Day / Night is a global theme: Day is light and Night is dark. It is a user setting, independent of weather, time, and each widget's Day / 5 Days switch.
-- `settingsStore` persists `panda-weather.theme` and falls back to `day` when the value is missing, invalid, or localStorage is unavailable. The header switches it immediately. `App` sets `data-theme` on the document, and shared CSS variables recolor the existing interface, including both tabs.
-- Theme labels are in the English and Ukrainian catalogs. Runtime checks were not run in this subphase.
+- `settingsStore` persists `panda-weather.theme` and falls back to `day` when the value is missing, invalid, or localStorage is unavailable. The header switches it immediately with sun and moon buttons that keep localized accessible names. `App` sets `data-theme` on the document, and shared CSS variables recolor Weather and Favorites.
+- The product name is `Panda Weather` in both catalogs and the document title.
+- The displayed five-day list and its chart use the first five city-local dates from `daily`. The three-hour entries used by Day mode are unchanged. The Day chart shows only forecast slots that remain on the city's local date; a single point late in that day is the provider data, not a missing chart update.
+- Manual checks confirmed theme switching and persistence, both tabs, EN/UK in both themes, and independence from Day / 5 Days. Automated checks and live provider description checks were not run.
 
 ## Decisions Log
 

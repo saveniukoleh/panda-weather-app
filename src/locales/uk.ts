@@ -4,7 +4,7 @@ type Widen<T> = T extends string ? string : { [K in keyof T]: Widen<T[K]> };
 
 const uk = {
   app: {
-    title: 'Погода Panda',
+    title: 'Panda Weather',
   },
   nav: {
     label: 'Розділи застосунку',

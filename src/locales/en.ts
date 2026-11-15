@@ -1,6 +1,6 @@
 const en = {
   app: {
-    title: 'Panda Weather App',
+    title: 'Panda Weather',
   },
   nav: {
     label: 'Application sections',

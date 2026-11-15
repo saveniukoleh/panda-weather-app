@@ -92,7 +92,7 @@ These requirements are marked as optional in the original assignment.
 #### 2.2.1. Five-Day Forecast
 
 - Add a Day / 5 Days display switch.
-- Display a weather card for each forecast day.
+- Display a weather card for each of the first five available local forecast days.
 - Calculate daily average temperature from available forecast measurements.
 - Display a temperature chart by day.
 - Use OpenWeatherMap forecast data.

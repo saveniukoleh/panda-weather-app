@@ -10,6 +10,7 @@ import type {
 } from '../../types/weather';
 
 const NOON_MINUTES = 12 * 60;
+const MAX_DISPLAYED_DAILY_DAYS = 5;
 
 export function normalizeCurrentWeather(payload: CurrentWeatherPayload): WeatherSnapshot {
   return {
@@ -104,7 +105,7 @@ function dailyForecasts(entries: ForecastEntry[], timezoneOffsetSeconds: number)
     });
   }
   days.sort((left, right) => left.localDate.localeCompare(right.localDate));
-  return days;
+  return days.slice(0, MAX_DISPLAYED_DAILY_DAYS);
 }
 
 function averageTemperature(entries: ForecastEntry[]): number {
