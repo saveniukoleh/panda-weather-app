@@ -135,13 +135,13 @@ Task statuses:
 
 ## 4.2. Weather Information Card
 
-- [ ] 4.2.1. Create the weather card component.
-- [ ] 4.2.2. Display city information.
-- [ ] 4.2.3. Display temperature.
-- [ ] 4.2.4. Display weather conditions.
-- [ ] 4.2.5. Display weather icons.
-- [ ] 4.2.6. Display additional weather parameters.
-- [ ] 4.2.7. Handle unavailable weather values.
+- [x] 4.2.1. Create the weather card component.
+- [x] 4.2.2. Display city information.
+- [x] 4.2.3. Display temperature.
+- [x] 4.2.4. Display weather conditions.
+- [x] 4.2.5. Display weather icons.
+- [x] 4.2.6. Display additional weather parameters.
+- [x] 4.2.7. Handle unavailable weather values.
 
 ## 4.3. Multiple Widgets
 
@@ -426,6 +426,12 @@ Task statuses:
 - Searchable widgets select a city from autocomplete. Non-searchable widgets follow the `location` prop and hide search. `locale` defaults to `en` and is sent with the weather request. The forecast is stored and not rendered.
 - The dashboard collection, add/remove, and the weather card were not started. No Pinia store was added.
 - Added composable and component tests. The test suite was not executed in this phase.
+
+## 4.2. Weather Information Card
+
+- Added `WeatherCard`, a presentational card for one normalized `WeatherSnapshot` and its `CityLocation`. `WeatherWidget` renders it from the forecast already stored by `useWeatherWidget`.
+- The card shows the city name and region, current temperature, condition text, the OpenWeatherMap icon for the stored icon code, and feels-like, humidity, wind, and pressure. Missing or non-finite values render as an em dash.
+- No new weather request was added. Phase 4.3 (widget collection, add, and remove) was not started.
 
 ## Decisions Log
 

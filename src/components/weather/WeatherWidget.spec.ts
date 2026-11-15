@@ -149,7 +149,7 @@ describe('WeatherWidget', () => {
     wrapper.unmount();
   });
 
-  it('loads weather for the selected suggestion without rendering the forecast', async () => {
+  it('loads weather for the selected suggestion and renders the current card', async () => {
     vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] });
     let resolveLoad: (forecast: WeatherForecast) => void = () => undefined;
     load.mockImplementation(
@@ -189,8 +189,9 @@ describe('WeatherWidget', () => {
     await flushPromises();
     await nextTick();
     expect(wrapper.text()).not.toContain('Loading weather');
-    expect(wrapper.text()).not.toContain('21');
-    expect(wrapper.text()).not.toContain('clear sky');
+    expect(wrapper.text()).toContain('Kyiv');
+    expect(wrapper.text()).toContain('21°C');
+    expect(wrapper.text()).toContain('clear sky');
     expect(wrapper.find('[role="alert"]').exists()).toBe(false);
     wrapper.unmount();
   });

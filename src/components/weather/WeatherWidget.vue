@@ -7,6 +7,7 @@ import { useWeatherWidget } from '../../composables/useWeatherWidget';
 import type { WeatherLanguage } from '../../types/api';
 import type { CityLocation } from '../../types/city';
 import CitySearch from './CitySearch.vue';
+import WeatherCard from './WeatherCard.vue';
 
 const props = withDefaults(
   defineProps<{
@@ -42,6 +43,7 @@ const {
 } = useCitySearch();
 
 const {
+  forecast,
   loading: weatherLoading,
   error: weatherError,
   selectCity,
@@ -91,6 +93,11 @@ function onSelect(city: CityLocation): void {
       :message="weatherError.message"
       retry-label="Retry"
       @retry="reload"
+    />
+    <WeatherCard
+      v-else-if="forecast"
+      :location="forecast.location"
+      :current="forecast.current"
     />
   </section>
 </template>
