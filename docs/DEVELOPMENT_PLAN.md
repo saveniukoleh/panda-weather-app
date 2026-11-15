@@ -160,13 +160,13 @@ Task statuses:
 
 ## 5.1. Chart.js Integration
 
-- [ ] 5.1.1. Install Chart.js.
-- [ ] 5.1.2. Create the chart component.
-- [ ] 5.1.3. Initialize Chart.js directly.
-- [ ] 5.1.4. Define chart configuration.
-- [ ] 5.1.5. Implement chart updates.
-- [ ] 5.1.6. Destroy chart instances on unmount.
-- [ ] 5.1.7. Handle empty datasets.
+- [x] 5.1.1. Install Chart.js.
+- [x] 5.1.2. Create the chart component.
+- [x] 5.1.3. Initialize Chart.js directly.
+- [x] 5.1.4. Define chart configuration.
+- [x] 5.1.5. Implement chart updates.
+- [x] 5.1.6. Destroy chart instances on unmount.
+- [x] 5.1.7. Handle empty datasets.
 
 ## 5.2. Current-Day Chart
 
@@ -440,6 +440,12 @@ Moved into Phase 4.3 so the default dashboard widget can load a city on startup.
 - `WeatherView` now renders the dashboard. The shared UI preview and its demonstration modal were removed.
 - `weatherWidgetsStore` keeps the session collection: one widget on startup, stable ids, add up to five, and remove only after `ConfirmModal`. The last widget cannot be removed. Search, loading, error, and forecast stay inside each `WeatherWidget`.
 - The first widget is seeded from IP geolocation (`ipLocationService`, geojs.io, no API key). Those coordinates go through the existing `weatherService`. Failure or an incomplete response uses London. Phase 7.3 is satisfied here and should not be repeated.
+
+## 5.1. Chart.js Integration
+
+- Added `TemperatureChart`, which draws a responsive Chart.js line chart from `TemperatureChartPoint[]` and updates that same instance when the points change.
+- An empty list renders a short empty state and does not create a chart. The instance is destroyed on unmount.
+- `WeatherWidget` renders the chart once a forecast is available and passes an empty dataset. Current-day extraction is left for Phase 5.2.
 
 ## Decisions Log
 

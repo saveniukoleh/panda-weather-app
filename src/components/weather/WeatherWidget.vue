@@ -6,7 +6,9 @@ import { useCitySearch } from '../../composables/useCitySearch';
 import { useWeatherWidget } from '../../composables/useWeatherWidget';
 import type { WeatherLanguage } from '../../types/api';
 import type { CityLocation } from '../../types/city';
+import type { TemperatureChartPoint } from '../../types/weather';
 import CitySearch from './CitySearch.vue';
+import TemperatureChart from './TemperatureChart.vue';
 import WeatherCard from './WeatherCard.vue';
 
 const props = withDefaults(
@@ -90,6 +92,8 @@ watch(
 function onSelect(city: CityLocation): void {
   select(city);
 }
+
+const chartPoints: TemperatureChartPoint[] = [];
 </script>
 
 <template>
@@ -110,11 +114,10 @@ function onSelect(city: CityLocation): void {
       retry-label="Retry"
       @retry="reload"
     />
-    <WeatherCard
-      v-else-if="forecast"
-      :location="forecast.location"
-      :current="forecast.current"
-    />
+    <template v-else-if="forecast">
+      <WeatherCard :location="forecast.location" :current="forecast.current" />
+      <TemperatureChart :points="chartPoints" />
+    </template>
   </section>
 </template>
 
