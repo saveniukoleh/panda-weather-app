@@ -22,11 +22,17 @@ const props = withDefaults(
     searchable?: boolean;
     /** Selected city for a non-searchable widget. Ignored while search is enabled. */
     location?: CityLocation | null;
+    /**
+     * City applied once to a searchable widget that has no query or selection yet.
+     * A later change does not replace a city the user already chose.
+     */
+    initialLocation?: CityLocation | null;
   }>(),
   {
     locale: 'en',
     searchable: true,
     location: null,
+    initialLocation: null,
   },
 );
 
@@ -67,6 +73,16 @@ watch(
     if (props.searchable) return;
     if (city) selectCity(city);
     else clearCity();
+  },
+  { flush: 'sync', immediate: true },
+);
+
+watch(
+  () => props.initialLocation,
+  (city) => {
+    if (!props.searchable || !city) return;
+    if (selected.value !== null || query.value.trim() !== '') return;
+    select(city);
   },
   { flush: 'sync', immediate: true },
 );

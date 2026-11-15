@@ -145,14 +145,14 @@ Task statuses:
 
 ## 4.3. Multiple Widgets
 
-- [ ] 4.3.1. Implement the widgets collection.
-- [ ] 4.3.2. Add one default widget.
-- [ ] 4.3.3. Implement the add-widget button.
-- [ ] 4.3.4. Enforce the five-widget limit.
-- [ ] 4.3.5. Implement widget removal.
-- [ ] 4.3.6. Implement removal confirmation.
-- [ ] 4.3.7. Ensure stable widget identifiers.
-- [ ] 4.3.8. Verify widget state isolation.
+- [x] 4.3.1. Implement the widgets collection.
+- [x] 4.3.2. Add one default widget.
+- [x] 4.3.3. Implement the add-widget button.
+- [x] 4.3.4. Enforce the five-widget limit.
+- [x] 4.3.5. Implement widget removal.
+- [x] 4.3.6. Implement removal confirmation.
+- [x] 4.3.7. Ensure stable widget identifiers.
+- [x] 4.3.8. Verify widget state isolation.
 
 ---
 
@@ -238,12 +238,14 @@ Task statuses:
 
 ## 7.3. Automatic Location
 
-- [ ] 7.3.1. Select an IP geolocation provider.
-- [ ] 7.3.2. Implement IP-based city detection.
-- [ ] 7.3.3. Convert detected location into weather coordinates.
-- [ ] 7.3.4. Use the detected city for the initial widget.
-- [ ] 7.3.5. Implement a fallback location.
-- [ ] 7.3.6. Handle geolocation provider failures.
+Moved into Phase 4.3 so the default dashboard widget can load a city on startup. Do not implement this section again.
+
+- [x] 7.3.1. Select an IP geolocation provider.
+- [x] 7.3.2. Implement IP-based city detection.
+- [x] 7.3.3. Convert detected location into weather coordinates.
+- [x] 7.3.4. Use the detected city for the initial widget.
+- [x] 7.3.5. Implement a fallback location.
+- [x] 7.3.6. Handle geolocation provider failures.
 
 ---
 
@@ -432,6 +434,12 @@ Task statuses:
 - Added `WeatherCard`, a presentational card for one normalized `WeatherSnapshot` and its `CityLocation`. `WeatherWidget` renders it from the forecast already stored by `useWeatherWidget`.
 - The card shows the city name and region, current temperature, condition text, the OpenWeatherMap icon for the stored icon code, and feels-like, humidity, wind, and pressure. Missing or non-finite values render as an em dash.
 - No new weather request was added. Phase 4.3 (widget collection, add, and remove) was not started.
+
+## 4.3. Multiple Widgets
+
+- `WeatherView` now renders the dashboard. The shared UI preview and its demonstration modal were removed.
+- `weatherWidgetsStore` keeps the session collection: one widget on startup, stable ids, add up to five, and remove only after `ConfirmModal`. The last widget cannot be removed. Search, loading, error, and forecast stay inside each `WeatherWidget`.
+- The first widget is seeded from IP geolocation (`ipLocationService`, geojs.io, no API key). Those coordinates go through the existing `weatherService`. Failure or an incomplete response uses London. Phase 7.3 is satisfied here and should not be repeated.
 
 ## Decisions Log
 

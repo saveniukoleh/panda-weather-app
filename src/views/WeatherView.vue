@@ -1,57 +1,95 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { onScopeDispose, ref } from 'vue';
+import { storeToRefs } from 'pinia';
 import AppButton from '../components/common/AppButton.vue';
 import ConfirmModal from '../components/common/ConfirmModal.vue';
-import EmptyState from '../components/common/EmptyState.vue';
-import ErrorMessage from '../components/common/ErrorMessage.vue';
-import LoadingIndicator from '../components/common/LoadingIndicator.vue';
+import WeatherWidget from '../components/weather/WeatherWidget.vue';
+import { ipLocationService } from '../services/location/ipLocationService';
+import { useWeatherWidgetsStore } from '../stores/weatherWidgetsStore';
+import type { CityLocation } from '../types/city';
 
-const isModalOpen = ref(false);
+const store = useWeatherWidgetsStore();
+const { widgets, pendingRemovalId, canAdd, canRemove } = storeToRefs(store);
+const initialWidgetId = widgets.value[0]?.id ?? null;
+const detectedCity = ref<CityLocation | null>(null);
+const locationRequest = new AbortController();
+
+void ipLocationService.detect(locationRequest.signal).then((city) => {
+  if (city) detectedCity.value = city;
+});
+
+onScopeDispose(() => {
+  locationRequest.abort();
+});
+
+function initialLocationFor(id: string): CityLocation | null {
+  return id === initialWidgetId ? detectedCity.value : null;
+}
 </script>
 
 <template>
-  <section>
-    <h2>Weather</h2>
-    <p>Weather dashboard will appear here.</p>
-
-    <div class="shared-ui-preview">
-      <h3>Shared UI preview</h3>
-      <AppButton variant="primary">Primary</AppButton>
-      <AppButton>Secondary</AppButton>
-      <AppButton variant="danger" @click="isModalOpen = true">Open confirm</AppButton>
-      <AppButton disabled>Disabled</AppButton>
-      <AppButton loading>Saving</AppButton>
-      <LoadingIndicator />
-      <ErrorMessage message="Something went wrong." retry-label="Retry" />
-      <EmptyState
-        title="Nothing here yet"
-        description="This is a placeholder empty state."
-        action-label="Optional action"
-      />
+  <section class="weather-dashboard" aria-label="Weather dashboard">
+    <div class="weather-dashboard__toolbar">
+      <h2>Weather</h2>
+      <AppButton variant="primary" :disabled="!canAdd" @click="store.addWidget()">
+        Add widget
+      </AppButton>
     </div>
-
+    <p v-if="!canAdd" class="weather-dashboard__limit">Maximum of 5 widgets.</p>
+    <ul class="weather-dashboard__widgets">
+      <li v-for="widget in widgets" :key="widget.id" class="weather-dashboard__widget">
+        <AppButton v-if="canRemove" variant="danger" @click="store.askRemove(widget.id)">
+          Remove
+        </AppButton>
+        <WeatherWidget :id="widget.id" :initial-location="initialLocationFor(widget.id)" />
+      </li>
+    </ul>
     <ConfirmModal
-      :open="isModalOpen"
-      title="Confirm action"
-      message="This is a reusable confirmation dialog."
-      confirm-label="Confirm"
+      :open="pendingRemovalId !== null"
+      title="Remove widget"
+      message="Remove this weather widget?"
+      confirm-label="Remove"
       cancel-label="Cancel"
-      @confirm="isModalOpen = false"
-      @cancel="isModalOpen = false"
+      @confirm="store.confirmRemove()"
+      @cancel="store.cancelRemove()"
     />
   </section>
 </template>
 
 <style scoped>
-.shared-ui-preview {
+.weather-dashboard {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.weather-dashboard__toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.weather-dashboard__toolbar h2,
+.weather-dashboard__limit {
+  margin: 0;
+}
+
+.weather-dashboard__widgets {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+  gap: 1rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.weather-dashboard__widget {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   gap: 0.75rem;
-  margin-top: 1.5rem;
-}
-
-.shared-ui-preview h3 {
-  margin: 0;
+  padding: 0.75rem;
+  border: 1px solid #ddd;
 }
 </style>
