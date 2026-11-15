@@ -71,19 +71,19 @@ function iconUrl(icon: string): string {
     </div>
     <dl>
       <div>
-        <dt>Feels like</dt>
+        <dt>{{ $t('card.feelsLike') }}</dt>
         <dd>{{ temperature(current.feelsLikeC) }}</dd>
       </div>
       <div>
-        <dt>Humidity</dt>
+        <dt>{{ $t('card.humidity') }}</dt>
         <dd>{{ percent(current.humidity) }}</dd>
       </div>
       <div>
-        <dt>Wind</dt>
+        <dt>{{ $t('card.wind') }}</dt>
         <dd>{{ wind(current.windSpeed) }}</dd>
       </div>
       <div>
-        <dt>Pressure</dt>
+        <dt>{{ $t('card.pressure') }}</dt>
         <dd>{{ pressure(current.pressure) }}</dd>
       </div>
     </dl>

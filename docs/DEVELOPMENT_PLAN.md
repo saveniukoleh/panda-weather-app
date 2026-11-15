@@ -221,13 +221,13 @@ Task statuses:
 
 ## 7.1. Localization
 
-- [ ] 7.1.1. Configure Vue I18n.
-- [ ] 7.1.2. Create English translations.
-- [ ] 7.1.3. Create Ukrainian translations.
-- [ ] 7.1.4. Implement language switching.
-- [ ] 7.1.5. Persist the selected language.
-- [ ] 7.1.6. Pass the selected language to weather API requests.
-- [ ] 7.1.7. Verify localized weather descriptions.
+- [x] 7.1.1. Configure Vue I18n.
+- [x] 7.1.2. Create English translations.
+- [x] 7.1.3. Create Ukrainian translations.
+- [x] 7.1.4. Implement language switching.
+- [x] 7.1.5. Persist the selected language.
+- [x] 7.1.6. Pass the selected language to weather API requests.
+- [x] 7.1.7. Verify localized weather descriptions.
 
 ## 7.2. Day / Night Display
 
@@ -470,6 +470,13 @@ Moved into Phase 4.3 so the default dashboard widget can load a city on startup.
 - `FavoritesView` replaces the placeholder with the cities in `favoritesStore`. Each city is one `WeatherWidget` with search disabled and `location` set. The list key is that city's `lat,lon`.
 - The widget's existing Favorite control removes the city, and the list updates immediately. Day / 5 Days stays inside each widget. An empty list shows `EmptyState`.
 - Weather requests stay in each `WeatherWidget`. `weatherWidgetsStore` is not used. The existing Weather / Favorites tabs are unchanged.
+
+## 7.1. Localization
+
+- Configured Vue I18n with English and Ukrainian catalogs. `settingsStore` restores `panda-weather.locale` and falls back to `en` when the value is missing, invalid, or localStorage is unavailable.
+- Replaced interface copy with those catalogs, including errors mapped from `AppError.code`. The header switches language immediately. Provider condition text is left unchanged.
+- Dashboard and favorite widgets receive the selected `LocaleCode`. The existing per-widget reload aborts the previous request and ignores a stale response, so descriptions follow the new language.
+- Added tests for locale persistence and for passing the selected locale into a favorite weather request.
 
 ## Decisions Log
 

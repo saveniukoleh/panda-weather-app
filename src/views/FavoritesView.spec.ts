@@ -4,6 +4,7 @@ import { createPinia, setActivePinia } from 'pinia';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { weatherService } from '../services/weather/weatherService';
 import { useFavoritesStore } from '../stores/favoritesStore';
+import { useSettingsStore } from '../stores/settingsStore';
 import type { CityLocation } from '../types/city';
 import type { WeatherForecast } from '../types/weather';
 import FavoritesView from './FavoritesView.vue';
@@ -165,5 +166,24 @@ describe('FavoritesView', () => {
     expect(widgets[1]?.text()).toContain('2026-02-02');
     wrapper.unmount();
     expect(load.mock.calls[0]?.[0].signal?.aborted).toBe(true);
+  });
+
+  it('reloads a favorite in the selected locale and aborts the previous request', async () => {
+    load.mockImplementation((input) => Promise.resolve(forecastFor(input.location)));
+    const pinia = createPinia();
+    setActivePinia(pinia);
+    useFavoritesStore().add(kyiv);
+
+    const wrapper = mount(FavoritesView, { global: { plugins: [pinia] } });
+    await flushPromises();
+
+    expect(load.mock.calls[0]?.[0].locale).toBe('en');
+    useSettingsStore().setLocale('uk');
+    await flushPromises();
+
+    expect(load).toHaveBeenCalledTimes(2);
+    expect(load.mock.calls[0]?.[0].signal?.aborted).toBe(true);
+    expect(load.mock.calls[1]?.[0]).toMatchObject({ location: kyiv, locale: 'uk' });
+    wrapper.unmount();
   });
 });

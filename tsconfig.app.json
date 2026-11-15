@@ -11,5 +11,5 @@
     "erasableSyntaxOnly": true
   },
   "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.vue"],
-  "exclude": ["src/**/*.spec.ts"]
+  "exclude": ["src/**/*.spec.ts", "src/test/**"]
 }

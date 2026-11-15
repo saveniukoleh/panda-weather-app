@@ -43,7 +43,7 @@ function onTabKeydown(event: KeyboardEvent): void {
 </script>
 
 <template>
-  <div class="app-nav" role="tablist" aria-label="Application sections" @keydown="onTabKeydown">
+  <div class="app-nav" role="tablist" :aria-label="$t('nav.label')" @keydown="onTabKeydown">
     <button
       id="tab-weather"
       ref="weatherTab"
@@ -54,7 +54,7 @@ function onTabKeydown(event: KeyboardEvent): void {
       :tabindex="activeTab === 'weather' ? 0 : -1"
       @click="selectTab('weather')"
     >
-      Weather
+      {{ $t('nav.weather') }}
     </button>
     <button
       id="tab-favorites"
@@ -66,7 +66,7 @@ function onTabKeydown(event: KeyboardEvent): void {
       :tabindex="activeTab === 'favorites' ? 0 : -1"
       @click="selectTab('favorites')"
     >
-      Favorites
+      {{ $t('nav.favorites') }}
     </button>
   </div>
 </template>

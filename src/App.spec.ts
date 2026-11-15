@@ -28,4 +28,15 @@ describe('application shell', () => {
     expect(wrapper.get('#weather-panel').isVisible()).toBe(false);
     expect(wrapper.get('#favorites-panel').text()).toContain('Favorites');
   });
+
+  it('switches the interface language without reloading', async () => {
+    const wrapper = mountApp();
+
+    await wrapper.get('[aria-label="Language"] button[aria-pressed="false"]').trigger('click');
+
+    expect(wrapper.get('#tab-weather').text()).toBe('Погода');
+    expect(wrapper.get('.app-header__title').text()).toBe('Погода Panda');
+    expect(document.documentElement.lang).toBe('uk');
+    expect(localStorage.getItem('panda-weather.locale')).toBe('uk');
+  });
 });

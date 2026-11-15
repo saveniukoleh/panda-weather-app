@@ -1,8 +1,9 @@
 <script setup lang="ts">
+import { useI18n } from 'vue-i18n';
 import AppButton from '../common/AppButton.vue';
 import ErrorMessage from '../common/ErrorMessage.vue';
 import LoadingIndicator from '../common/LoadingIndicator.vue';
-import type { AppError } from '../../types/api';
+import type { AppError, AppErrorCode } from '../../types/api';
 import type { CityLocation } from '../../types/city';
 
 defineProps<{
@@ -18,6 +19,12 @@ const emit = defineEmits<{
   select: [location: CityLocation];
 }>();
 
+const { t } = useI18n();
+
+function errorText(code: AppErrorCode): string {
+  return t(`errors.${code}`);
+}
+
 function onInput(event: Event): void {
   const target = event.target;
   if (!(target instanceof HTMLInputElement)) return;
@@ -32,7 +39,7 @@ function cityLabel(city: CityLocation): string {
 
 <template>
   <div class="city-search">
-    <label :for="inputId">City</label>
+    <label :for="inputId">{{ $t('search.city') }}</label>
     <input
       :id="inputId"
       type="search"
@@ -44,14 +51,14 @@ function cityLabel(city: CityLocation): string {
       :aria-controls="`${inputId}-list`"
       @input="onInput"
     />
-    <LoadingIndicator v-if="loading" label="Searching" />
-    <ErrorMessage v-if="error" :message="error.message" />
+    <LoadingIndicator v-if="loading" :label="$t('search.searching')" />
+    <ErrorMessage v-if="error" :message="errorText(error.code)" />
     <ul
       v-show="suggestions.length > 0"
       :id="`${inputId}-list`"
       class="city-search__suggestions"
       role="listbox"
-      aria-label="City suggestions"
+      :aria-label="$t('search.suggestions')"
     >
       <li v-for="city in suggestions" :key="`${city.lat}:${city.lon}`" role="presentation">
         <AppButton

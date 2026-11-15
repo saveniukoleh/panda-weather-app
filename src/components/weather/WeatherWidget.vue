@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, ref, useId, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
 import AppButton from '../common/AppButton.vue';
 import ConfirmModal from '../common/ConfirmModal.vue';
 import ErrorMessage from '../common/ErrorMessage.vue';
@@ -8,7 +9,7 @@ import { useCitySearch } from '../../composables/useCitySearch';
 import { useWeatherWidget } from '../../composables/useWeatherWidget';
 import { toWeatherChartDatasets } from '../../services/weather/normalizeWeather';
 import { useFavoritesStore } from '../../stores/favoritesStore';
-import type { WeatherLanguage } from '../../types/api';
+import type { AppErrorCode, LocaleCode } from '../../types/api';
 import type { CityLocation } from '../../types/city';
 import type { DailyForecast } from '../../types/weather';
 import CitySearch from './CitySearch.vue';
@@ -20,7 +21,7 @@ const props = withDefaults(
     /** Stable id used for the city search control. Generated when omitted. */
     id?: string;
     /** Language sent with the weather request. Defaults to English. */
-    locale?: WeatherLanguage;
+    locale?: LocaleCode;
     /**
      * When true, the city comes from this widget's search.
      * When false, search is hidden and `location` is the selected city.
@@ -42,6 +43,7 @@ const props = withDefaults(
   },
 );
 
+const { t } = useI18n();
 const generatedId = useId();
 const searchInputId = computed(() => `${props.id ?? generatedId}-city`);
 
@@ -147,10 +149,14 @@ function toggleFavorite(): void {
 function closeFavoritesLimit(): void {
   favoritesLimitOpen.value = false;
 }
+
+function errorText(code: AppErrorCode): string {
+  return t(`errors.${code}`);
+}
 </script>
 
 <template>
-  <section class="weather-widget" aria-label="Weather" :aria-busy="weatherLoading">
+  <section class="weather-widget" :aria-label="$t('weather.label')" :aria-busy="weatherLoading">
     <CitySearch
       v-if="searchable"
       v-model:query="query"
@@ -160,36 +166,36 @@ function closeFavoritesLimit(): void {
       :error="searchError"
       @select="onSelect"
     />
-    <LoadingIndicator v-if="weatherLoading" label="Loading weather" />
+    <LoadingIndicator v-if="weatherLoading" :label="$t('weather.loading')" />
     <ErrorMessage
       v-else-if="weatherError"
-      :message="weatherError.message"
-      retry-label="Retry"
+      :message="errorText(weatherError.code)"
+      :retry-label="$t('weather.retry')"
       @retry="reload"
     />
     <template v-else-if="forecast">
       <AppButton
         :variant="isFavorite ? 'primary' : 'secondary'"
         :aria-pressed="isFavorite"
-        :aria-label="isFavorite ? 'Remove from favorites' : 'Add to favorites'"
+        :aria-label="isFavorite ? $t('weather.removeFavorite') : $t('weather.addFavorite')"
         @click="toggleFavorite"
       >
-        {{ isFavorite ? 'Favorited' : 'Favorite' }}
+        {{ isFavorite ? $t('weather.favorited') : $t('weather.favorite') }}
       </AppButton>
-      <div class="forecast-range" role="group" aria-label="Forecast range">
+      <div class="forecast-range" role="group" :aria-label="$t('weather.range')">
         <AppButton
           :variant="forecastRange === 'day' ? 'primary' : 'secondary'"
           :aria-pressed="forecastRange === 'day'"
           @click="forecastRange = 'day'"
         >
-          Day
+          {{ $t('weather.day') }}
         </AppButton>
         <AppButton
           :variant="forecastRange === 'fiveDays' ? 'primary' : 'secondary'"
           :aria-pressed="forecastRange === 'fiveDays'"
           @click="forecastRange = 'fiveDays'"
         >
-          5 Days
+          {{ $t('weather.fiveDays') }}
         </AppButton>
       </div>
       <WeatherCard :location="forecast.location" :current="forecast.current" />
@@ -211,10 +217,10 @@ function closeFavoritesLimit(): void {
     </template>
     <ConfirmModal
       :open="favoritesLimitOpen"
-      title="Favorites limit"
-      message="You can save up to 5 favorite cities. Remove an existing favorite before adding another city."
-      confirm-label="OK"
-      cancel-label="Close"
+      :title="$t('weather.limitTitle')"
+      :message="$t('weather.limitMessage')"
+      :confirm-label="$t('weather.ok')"
+      :cancel-label="$t('weather.close')"
       @confirm="closeFavoritesLimit"
       @cancel="closeFavoritesLimit"
     />

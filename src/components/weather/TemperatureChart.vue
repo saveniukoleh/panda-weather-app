@@ -71,7 +71,11 @@ async function syncChart(): Promise<void> {
   chart.update();
 }
 
-watch(() => props.points, () => void syncChart(), { deep: true });
+watch(
+  () => props.points,
+  () => void syncChart(),
+  { deep: true },
+);
 
 onMounted(() => {
   void syncChart();
@@ -85,8 +89,8 @@ onBeforeUnmount(() => {
 
 <template>
   <div class="temperature-chart">
-    <p v-if="points.length === 0" class="temperature-chart__empty">No temperature data</p>
-    <canvas v-else ref="canvas" aria-label="Temperature"></canvas>
+    <p v-if="points.length === 0" class="temperature-chart__empty">{{ $t('chart.empty') }}</p>
+    <canvas v-else ref="canvas" :aria-label="$t('chart.label')"></canvas>
   </div>
 </template>
 

@@ -12,7 +12,9 @@ export interface AppError {
   message: string;
 }
 
-export type WeatherLanguage = 'en' | 'uk';
+export type LocaleCode = 'en' | 'uk';
+
+export type WeatherLanguage = LocaleCode;
 
 export interface GeocodingQuery {
   q: string;

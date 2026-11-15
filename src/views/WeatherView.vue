@@ -5,11 +5,13 @@ import AppButton from '../components/common/AppButton.vue';
 import ConfirmModal from '../components/common/ConfirmModal.vue';
 import WeatherWidget from '../components/weather/WeatherWidget.vue';
 import { ipLocationService } from '../services/location/ipLocationService';
+import { useSettingsStore } from '../stores/settingsStore';
 import { useWeatherWidgetsStore } from '../stores/weatherWidgetsStore';
 import type { CityLocation } from '../types/city';
 
 const store = useWeatherWidgetsStore();
 const { widgets, pendingRemovalId, canAdd, canRemove } = storeToRefs(store);
+const { locale } = storeToRefs(useSettingsStore());
 const initialWidgetId = widgets.value[0]?.id ?? null;
 const detectedCity = ref<CityLocation | null>(null);
 const locationRequest = new AbortController();
@@ -28,28 +30,32 @@ function initialLocationFor(id: string): CityLocation | null {
 </script>
 
 <template>
-  <section class="weather-dashboard" aria-label="Weather dashboard">
+  <section class="weather-dashboard" :aria-label="$t('dashboard.label')">
     <div class="weather-dashboard__toolbar">
-      <h2>Weather</h2>
+      <h2>{{ $t('dashboard.title') }}</h2>
       <AppButton variant="primary" :disabled="!canAdd" @click="store.addWidget()">
-        Add widget
+        {{ $t('dashboard.addWidget') }}
       </AppButton>
     </div>
-    <p v-if="!canAdd" class="weather-dashboard__limit">Maximum of 5 widgets.</p>
+    <p v-if="!canAdd" class="weather-dashboard__limit">{{ $t('dashboard.widgetLimit') }}</p>
     <ul class="weather-dashboard__widgets">
       <li v-for="widget in widgets" :key="widget.id" class="weather-dashboard__widget">
         <AppButton v-if="canRemove" variant="danger" @click="store.askRemove(widget.id)">
-          Remove
+          {{ $t('dashboard.remove') }}
         </AppButton>
-        <WeatherWidget :id="widget.id" :initial-location="initialLocationFor(widget.id)" />
+        <WeatherWidget
+          :id="widget.id"
+          :locale="locale"
+          :initial-location="initialLocationFor(widget.id)"
+        />
       </li>
     </ul>
     <ConfirmModal
       :open="pendingRemovalId !== null"
-      title="Remove widget"
-      message="Remove this weather widget?"
-      confirm-label="Remove"
-      cancel-label="Cancel"
+      :title="$t('dashboard.removeTitle')"
+      :message="$t('dashboard.removeMessage')"
+      :confirm-label="$t('dashboard.removeConfirm')"
+      :cancel-label="$t('dashboard.cancel')"
       @confirm="store.confirmRemove()"
       @cancel="store.cancelRemove()"
     />
