@@ -170,11 +170,11 @@ Task statuses:
 
 ## 5.2. Current-Day Chart
 
-- [ ] 5.2.1. Extract current-day temperature data.
-- [ ] 5.2.2. Prepare time labels.
-- [ ] 5.2.3. Render temperature chart.
-- [ ] 5.2.4. Update the chart when the selected city changes.
-- [ ] 5.2.5. Verify chart behavior for independent widgets.
+- [x] 5.2.1. Extract current-day temperature data.
+- [x] 5.2.2. Prepare time labels.
+- [x] 5.2.3. Render temperature chart.
+- [x] 5.2.4. Update the chart when the selected city changes.
+- [x] 5.2.5. Verify chart behavior for independent widgets.
 
 ## 5.3. Five-Day Forecast
 
@@ -445,7 +445,13 @@ Moved into Phase 4.3 so the default dashboard widget can load a city on startup.
 
 - Added `TemperatureChart`, which draws a responsive Chart.js line chart from `TemperatureChartPoint[]` and updates that same instance when the points change.
 - An empty list renders a short empty state and does not create a chart. The instance is destroyed on unmount.
-- `WeatherWidget` renders the chart once a forecast is available and passes an empty dataset. Current-day extraction is left for Phase 5.2.
+- `WeatherWidget` renders the chart once a forecast is available.
+
+## 5.2. Current-Day Chart
+
+- `WeatherWidget` passes `toWeatherChartDatasets(forecast).currentDay` into `TemperatureChart`. Points are that city's forecast entries for the current calendar day, using `timezoneOffsetSeconds`. Labels are `HH:MM`. Temperatures stay in Celsius. No extra request is made.
+- A new city clears the previous forecast before the next result arrives, so the chart unmounts and cannot keep the previous city's points. Each widget computes points from its own forecast.
+- If the current city-local day has no valid entries, the chart receives an empty list and keeps the existing empty state. Entries with a non-finite timestamp or temperature are already dropped during normalization. Phase 5.3 was not started.
 
 ## Decisions Log
 

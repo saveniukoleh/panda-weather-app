@@ -4,9 +4,9 @@ import ErrorMessage from '../common/ErrorMessage.vue';
 import LoadingIndicator from '../common/LoadingIndicator.vue';
 import { useCitySearch } from '../../composables/useCitySearch';
 import { useWeatherWidget } from '../../composables/useWeatherWidget';
+import { toWeatherChartDatasets } from '../../services/weather/normalizeWeather';
 import type { WeatherLanguage } from '../../types/api';
 import type { CityLocation } from '../../types/city';
-import type { TemperatureChartPoint } from '../../types/weather';
 import CitySearch from './CitySearch.vue';
 import TemperatureChart from './TemperatureChart.vue';
 import WeatherCard from './WeatherCard.vue';
@@ -93,7 +93,9 @@ function onSelect(city: CityLocation): void {
   select(city);
 }
 
-const chartPoints: TemperatureChartPoint[] = [];
+const chartPoints = computed(() =>
+  forecast.value === null ? [] : toWeatherChartDatasets(forecast.value).currentDay,
+);
 </script>
 
 <template>
