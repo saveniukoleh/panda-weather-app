@@ -108,6 +108,12 @@ function onTabKeydown(event: KeyboardEvent): void {
   font-weight: var(--font-weight-semibold);
 }
 
+.app-nav button[aria-selected='true']:hover {
+  border-color: var(--color-accent-hover);
+  background: var(--color-accent-soft);
+  color: var(--color-accent);
+}
+
 @media (max-width: 768px) {
   .app-nav {
     padding: var(--space-3) var(--space-4);

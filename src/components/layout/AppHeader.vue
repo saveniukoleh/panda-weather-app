@@ -139,6 +139,12 @@ const { locale, theme } = storeToRefs(settings);
   font-weight: var(--font-weight-semibold);
 }
 
+.app-header__controls button[aria-pressed='true']:hover {
+  border-color: var(--color-accent-hover);
+  background: var(--color-accent-soft);
+  color: var(--color-accent);
+}
+
 @media (max-width: 768px) {
   .app-header {
     padding: var(--space-3) var(--space-4);

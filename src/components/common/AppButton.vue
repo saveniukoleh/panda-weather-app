@@ -59,6 +59,7 @@ function onClick(event: MouseEvent): void {
   transition:
     background-color var(--duration-fast),
     border-color var(--duration-fast),
+    box-shadow var(--duration-fast),
     color var(--duration-fast);
 }
 

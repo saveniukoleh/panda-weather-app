@@ -289,11 +289,11 @@ Intermediate subphase between Phase 7 and Phase 8. Completed Phase 7 tasks stay 
 
 ## 8.3. Interaction Polish
 
-- [ ] 8.3.1. Add hover states.
-- [ ] 8.3.2. Add focus states.
-- [ ] 8.3.3. Add appropriate transitions.
-- [ ] 8.3.4. Verify keyboard interactions.
-- [ ] 8.3.5. Verify modal interactions.
+- [x] 8.3.1. Add hover states.
+- [x] 8.3.2. Add focus states.
+- [x] 8.3.3. Add appropriate transitions.
+- [x] 8.3.4. Verify keyboard interactions.
+- [x] 8.3.5. Verify modal interactions.
 
 ---
 
@@ -518,6 +518,13 @@ Intermediate subphase between Phase 7 and Phase 8. Completed Phase 7 tasks stay 
 - Desktop stays the default: three widget columns from 1025 px up. From 1024 px down, including 768 px, the grid uses two columns. From 640 px down, including 360 px, it uses one column. Header controls wrap, and below 480 px the title stacks above them.
 - Cards, search suggestions, the confirmation modal, and feedback states are constrained to their containers. The temperature chart keeps `responsive: true`, skips overlapping time labels, and keeps the existing unit caption above the canvas.
 - Viewport checks at 1200 px, 768 px, and 360 px, and chart resize checks, are still open. Automated checks were not run.
+
+## 8.3. Interaction Polish
+
+- Hover stays on the existing controls. Selected header, theme, language, and navigation controls keep the accent surface and only change border color on hover. Primary, secondary, and destructive buttons already used separate hover fills.
+- Keyboard focus uses the shared `:focus-visible` outline. Transitions stay on color, background, border, and shadow, and `prefers-reduced-motion: reduce` sets those durations to zero.
+- City search keeps focus in the input: Arrow Up and Arrow Down move the active suggestion, Enter selects it, and Escape hides the current list. Existing navigation tabs already move with the arrow keys. The confirmation modal focuses Cancel, traps Tab inside its actions, closes on Escape, and returns focus to the opener when that element is still present.
+- Keyboard and modal behavior are implemented and are not marked verified. Automated checks were not run.
 
 ## Decisions Log
 

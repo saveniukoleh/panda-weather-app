@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, nextTick, useId, useTemplateRef, watch } from 'vue';
+import { computed, nextTick, onBeforeUnmount, useId, useTemplateRef, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import AppButton from './AppButton.vue';
 
@@ -23,16 +23,39 @@ const emit = defineEmits<{
 const dialog = useTemplateRef<HTMLDivElement>('dialog');
 const titleId = `confirm-modal-title-${useId()}`;
 const messageId = `confirm-modal-message-${useId()}`;
+let restoreFocusTo: HTMLElement | null = null;
+
+function focusableActions(): HTMLButtonElement[] {
+  const root = dialog.value;
+  if (!root) return [];
+  return [...root.querySelectorAll('button')].filter(
+    (button): button is HTMLButtonElement => !button.disabled,
+  );
+}
+
+function rememberOpener(): void {
+  const current = document.activeElement;
+  restoreFocusTo = current instanceof HTMLElement ? current : null;
+}
+
+function returnFocus(): void {
+  const target = restoreFocusTo;
+  restoreFocusTo = null;
+  if (target?.isConnected) target.focus();
+}
 
 watch(
   () => props.open,
   async (isOpen) => {
     if (!isOpen) {
+      returnFocus();
       return;
     }
 
+    rememberOpener();
     await nextTick();
-    dialog.value?.focus();
+    const [cancelButton] = focusableActions();
+    (cancelButton ?? dialog.value)?.focus();
   },
 );
 
@@ -40,8 +63,37 @@ function onKeydown(event: KeyboardEvent): void {
   if (event.key === 'Escape') {
     event.preventDefault();
     emit('cancel');
+    return;
+  }
+
+  if (event.key !== 'Tab') return;
+
+  const actions = focusableActions();
+  if (actions.length === 0) {
+    event.preventDefault();
+    dialog.value?.focus();
+    return;
+  }
+
+  const first = actions[0];
+  const last = actions[actions.length - 1];
+  const active = document.activeElement;
+
+  if (event.shiftKey && (active === first || !dialog.value?.contains(active))) {
+    event.preventDefault();
+    last?.focus();
+    return;
+  }
+
+  if (!event.shiftKey && active === last) {
+    event.preventDefault();
+    first?.focus();
   }
 }
+
+onBeforeUnmount(() => {
+  if (props.open) returnFocus();
+});
 </script>
 
 <template>
