@@ -340,11 +340,11 @@ Intermediate subphase between Phase 7 and Phase 8. Completed Phase 7 tasks stay 
 
 ## 10.1. Project Documentation
 
-- [ ] 10.1.1. Update README setup instructions.
-- [ ] 10.1.2. Document environment variables.
-- [ ] 10.1.3. Document API limitations.
-- [ ] 10.1.4. Document additional functionality.
-- [ ] 10.1.5. Update project status.
+- [x] 10.1.1. Update README setup instructions.
+- [x] 10.1.2. Document environment variables.
+- [x] 10.1.3. Document API limitations.
+- [x] 10.1.4. Document additional functionality.
+- [x] 10.1.5. Update project status.
 
 ## 10.2. Deployment
 
@@ -557,6 +557,11 @@ Intermediate subphase between Phase 7 and Phase 8. Completed Phase 7 tasks stay 
 - Viewports 1200, 768, and 360 had no horizontal overflow. Header controls, both tabs, the weather card, the chart, and the remove dialog stayed inside the viewport in Day and Night.
 - Git history has 34 commits on `main` and `origin/main`. `.env` was never committed. The only key-like values are the test fixture `test-key` and empty or placeholder documentation. The frontend variable is `VITE_API_BASE_URL`. No real provider key was found.
 - Production application code was not changed.
+
+## 10.1. Project Documentation
+
+- README setup, environment variables, API limitations, additional functionality, and project status now match the implemented app and `docs/API_INTEGRATION.md`.
+- Phase 9 remains complete. Phase 10.2 and Phase 10.3 remain open. No application or Worker code was changed.
 
 ## Decisions Log
 
