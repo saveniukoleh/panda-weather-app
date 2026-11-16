@@ -9,6 +9,8 @@ const props = defineProps<{
   message: string;
   confirmLabel?: string;
   cancelLabel?: string;
+  /** Hides the secondary action. Escape and backdrop still emit cancel. */
+  hideCancel?: boolean;
 }>();
 
 const { t } = useI18n();
@@ -115,7 +117,7 @@ onBeforeUnmount(() => {
       <h2 :id="titleId">{{ title }}</h2>
       <p :id="messageId">{{ message }}</p>
       <div class="confirm-modal__actions">
-        <AppButton variant="secondary" @click="emit('cancel')">
+        <AppButton v-if="!hideCancel" variant="secondary" @click="emit('cancel')">
           {{ cancelText }}
         </AppButton>
         <AppButton variant="danger" @click="emit('confirm')">

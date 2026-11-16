@@ -523,8 +523,9 @@ Intermediate subphase between Phase 7 and Phase 8. Completed Phase 7 tasks stay 
 
 - Hover stays on the existing controls. Selected header, theme, language, and navigation controls keep the accent surface and only change border color on hover. Primary, secondary, and destructive buttons already used separate hover fills.
 - Keyboard focus uses the shared `:focus-visible` outline. Transitions stay on color, background, border, and shadow, and `prefers-reduced-motion: reduce` sets those durations to zero.
-- City search keeps focus in the input: Arrow Up and Arrow Down move the active suggestion, Enter selects it, and Escape hides the current list. Existing navigation tabs already move with the arrow keys. The confirmation modal focuses Cancel, traps Tab inside its actions, closes on Escape, and returns focus to the opener when that element is still present.
-- Keyboard and modal behavior are implemented and are not marked verified. Automated checks were not run.
+- City search keeps focus in the input: Arrow Up and Arrow Down move the active suggestion, Enter selects it, and Escape hides the current list. Existing navigation tabs already move with the arrow keys. The widget-removal modal keeps Cancel and Confirm, focuses Cancel, traps Tab inside its actions, closes on Escape, and returns focus to the opener when that element is still present.
+- The favorites-limit modal keeps its existing title and message and shows only the existing OK action. Escape and backdrop click still close it. Widget removal is unchanged.
+- Keyboard navigation and modal behavior were manually verified. Automated checks were not run.
 
 ## Decisions Log
 

@@ -222,7 +222,7 @@ function errorText(code: AppErrorCode): string {
       :title="$t('weather.limitTitle')"
       :message="$t('weather.limitMessage')"
       :confirm-label="$t('weather.ok')"
-      :cancel-label="$t('weather.close')"
+      hide-cancel
       @confirm="closeFavoritesLimit"
       @cancel="closeFavoritesLimit"
     />
