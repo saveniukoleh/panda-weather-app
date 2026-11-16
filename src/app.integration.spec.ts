@@ -136,7 +136,10 @@ function mountApp(): VueWrapper {
   return mount(App, { global: { plugins: [createPinia()] } });
 }
 
-async function searchCity(widget: VueWrapper, name: string): Promise<void> {
+async function searchCity(
+  widget: { get(selector: string): { setValue(value: string): Promise<void> } },
+  name: string,
+): Promise<void> {
   await widget.get('input').setValue(name);
   await vi.advanceTimersByTimeAsync(CITY_SEARCH_DEBOUNCE_MS);
   await flushPromises();

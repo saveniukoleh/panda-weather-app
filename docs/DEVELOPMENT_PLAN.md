@@ -326,13 +326,13 @@ Intermediate subphase between Phase 7 and Phase 8. Completed Phase 7 tasks stay 
 
 ## 9.4. Final Quality Checks
 
-- [ ] 9.4.1. Run the full test suite.
-- [ ] 9.4.2. Run ESLint.
-- [ ] 9.4.3. Run TypeScript checks.
-- [ ] 9.4.4. Run production build.
-- [ ] 9.4.5. Inspect browser console.
-- [ ] 9.4.6. Verify mobile layout.
-- [ ] 9.4.7. Verify API credentials are not exposed in Git history.
+- [x] 9.4.1. Run the full test suite.
+- [x] 9.4.2. Run ESLint.
+- [x] 9.4.3. Run TypeScript checks.
+- [x] 9.4.4. Run production build.
+- [x] 9.4.5. Inspect browser console.
+- [x] 9.4.6. Verify mobile layout.
+- [x] 9.4.7. Verify API credentials are not exposed in Git history.
 
 ---
 
@@ -546,6 +546,17 @@ Intermediate subphase between Phase 7 and Phase 8. Completed Phase 7 tasks stay 
 - Added `src/app.integration.spec.ts`. It mounts `App` and uses the real geocoding service, weather service, API client, validation, normalization, and favorites store. Only `fetch` is mocked, plus the chart canvas so jsdom can render chart props. The clock is fixed at `2026-01-16T02:00:00Z`.
 - The flow searches Kyiv through the worker, renders 21°C, and switches `24 Hours` and `5 Days` without another weather request. A second widget loads Lviv, survives a 429 on that city, and recovers on retry while Kyiv stays at 21°C. A favorite saved from the widget is still there after a new Pinia mount and loads the saved coordinates. Geocoding 500, a rejected `fetch`, and an invalid weather payload show the mapped messages and omit the upstream text.
 - `vitest run src/app.integration.spec.ts`: 1 file, 4 tests, all passed. Production code was not changed.
+
+## 9.4. Final Quality Checks
+
+- `npm run test:run`: 25 files, 122 tests, all passed.
+- `npm run lint`: exit 0. One existing warning: `WeatherWidget.vue` prop `id` has no default. No lint errors.
+- `npm run type-check`: passed after correcting test-only types in `app.integration.spec.ts` and `CitySearch.spec.ts`.
+- `npm run build`: passed. `dist/index.html`, `dist/assets/index-CJYrOgSg.css`, and `dist/assets/index-DtsWgxve.js` were written.
+- The dev server rendered Panda Weather. IP lookup, current weather, and forecast against the local worker returned 200. Theme, language, and Weather/Favorites navigation produced no console errors or warnings. No error text was shown.
+- Viewports 1200, 768, and 360 had no horizontal overflow. Header controls, both tabs, the weather card, the chart, and the remove dialog stayed inside the viewport in Day and Night.
+- Git history has 34 commits on `main` and `origin/main`. `.env` was never committed. The only key-like values are the test fixture `test-key` and empty or placeholder documentation. The frontend variable is `VITE_API_BASE_URL`. No real provider key was found.
+- Production application code was not changed.
 
 ## Decisions Log
 

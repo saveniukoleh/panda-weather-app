@@ -25,7 +25,7 @@ function mountSearch(
     query: string;
     suggestions: CityLocation[];
     loading: boolean;
-    error: { code: 'network' } | null;
+    error: { code: 'network'; message: string } | null;
   }> = {},
 ) {
   return mount(CitySearch, {
@@ -95,7 +95,9 @@ describe('CitySearch', () => {
     const loading = mountSearch({ loading: true });
     expect(loading.text()).toContain('Searching');
 
-    const failed = mountSearch({ error: { code: 'network' } });
+    const failed = mountSearch({
+      error: { code: 'network', message: 'The weather service could not be reached.' },
+    });
     expect(failed.get('[role="alert"]').text()).toContain(
       'The weather service could not be reached.',
     );
