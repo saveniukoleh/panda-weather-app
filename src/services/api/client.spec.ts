@@ -81,6 +81,17 @@ describe('api client reliability', () => {
       expect(limited.message).not.toContain('sk-live');
       expect(limited.message).not.toContain('quota');
     }
+
+    fetchMock.mockResolvedValueOnce(new Response('quota token=sk-live', { status: 429 }));
+    const raw = await requestForecast({ lat: 50.45, lon: 30.52 }).then(
+      () => null,
+      (error: unknown) => error,
+    );
+    expect(raw).toMatchObject({ code: 'rate_limit' });
+    if (raw instanceof AppRequestError) {
+      expect(raw.message).not.toContain('sk-live');
+      expect(raw.message).not.toContain('quota');
+    }
   });
 
   it('keeps cancellation separate from a network failure', async () => {

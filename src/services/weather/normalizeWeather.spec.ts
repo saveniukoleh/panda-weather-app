@@ -157,16 +157,32 @@ describe('forecast normalization', () => {
     expect(forecast.daily.map((day) => day.localDate)).toEqual(['2026-01-16', '2026-01-17']);
   });
 
-  it('extracts only the current local calendar day', () => {
-    const forecast = normalizeWeatherForecast(kyiv, currentPayload(), payload);
-    const today = currentDayForecastEntries(forecast, nowUnix);
+  it('keeps the rolling 24-hour window in chronological order', () => {
+    const windowNow = unix('2026-01-16T02:00:00Z');
+    const forecast = normalizeWeatherForecast(
+      kyiv,
+      currentPayload(),
+      forecastPayload([
+        slot('2026-01-17T05:00:00Z', 9),
+        slot('2026-01-17T02:00:00Z', 4),
+        slot('2026-01-16T01:00:00Z', 1),
+        slot('2026-01-16T15:00:00Z', 3),
+        slot('2026-01-16T02:00:00Z', 2),
+      ]),
+    );
+    const window = currentDayForecastEntries(forecast, windowNow);
 
-    expect(today.map((entry) => entry.temperatureC)).toEqual([1, 3, 5]);
-    expect(
-      today.every(
-        (entry) => localCalendarDate(entry.timestampUnix, TOKYO_OFFSET_SECONDS) === '2026-01-16',
-      ),
-    ).toBe(true);
+    expect(window.map((entry) => entry.temperatureC)).toEqual([2, 3, 4]);
+    expect(window.map((entry) => entry.timestampUnix)).toEqual([
+      windowNow,
+      unix('2026-01-16T15:00:00Z'),
+      windowNow + 24 * 60 * 60,
+    ]);
+    expect(toWeatherChartDatasets(forecast, windowNow).currentDay).toEqual([
+      { label: '11:00', temperatureC: 2 },
+      { label: '00:00', temperatureC: 3 },
+      { label: '11:00', temperatureC: 4 },
+    ]);
   });
 
   it('averages only the temperatures that exist for each local day', () => {
@@ -209,9 +225,8 @@ describe('forecast normalization', () => {
 
     expect(toWeatherChartDatasets(forecast, nowUnix)).toEqual({
       currentDay: [
-        { label: '00:00', temperatureC: 1 },
-        { label: '03:00', temperatureC: 3 },
         { label: '12:00', temperatureC: 5 },
+        { label: '00:00', temperatureC: 10 },
       ],
       dailyAverages: [
         { label: '2026-01-16', temperatureC: 3 },
@@ -231,10 +246,11 @@ describe('forecast normalization', () => {
     );
     const today = currentDayForecastEntries(forecast, unix('2026-01-16T08:00:00Z'));
 
-    expect(today.map((entry) => entry.temperatureC)).toEqual([4]);
+    expect(today.map((entry) => entry.temperatureC)).toEqual([4, 8]);
     expect(forecast.daily.map((day) => day.localDate)).toEqual(['2026-01-15', '2026-01-16']);
     expect(toWeatherChartDatasets(forecast, unix('2026-01-16T08:00:00Z')).currentDay).toEqual([
       { label: '22:00', temperatureC: 4 },
+      { label: '00:00', temperatureC: 8 },
     ]);
   });
 

@@ -1,6 +1,6 @@
 import { createPinia, setActivePinia } from 'pinia';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { LOCALE_STORAGE_KEY, useSettingsStore } from './settingsStore';
+import { LOCALE_STORAGE_KEY, THEME_STORAGE_KEY, useSettingsStore } from './settingsStore';
 
 describe('settingsStore', () => {
   beforeEach(() => {
@@ -58,5 +58,20 @@ describe('settingsStore', () => {
     expect(blocked.locale).toBe('en');
     expect(() => blocked.setLocale('uk')).not.toThrow();
     expect(blocked.locale).toBe('uk');
+  });
+
+  it('persists the theme and ignores an invalid stored value', () => {
+    const store = useSettingsStore();
+    expect(store.theme).toBe('day');
+
+    store.setTheme('night');
+    expect(localStorage.getItem(THEME_STORAGE_KEY)).toBe('night');
+
+    setActivePinia(createPinia());
+    expect(useSettingsStore().theme).toBe('night');
+
+    localStorage.setItem(THEME_STORAGE_KEY, 'dusk');
+    setActivePinia(createPinia());
+    expect(useSettingsStore().theme).toBe('day');
   });
 });

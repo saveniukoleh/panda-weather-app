@@ -301,11 +301,11 @@ Intermediate subphase between Phase 7 and Phase 8. Completed Phase 7 tasks stay 
 
 ## 9.1. Unit Testing
 
-- [ ] 9.1.1. Test weather data normalization.
-- [ ] 9.1.2. Test daily average calculations.
-- [ ] 9.1.3. Test favorites management.
-- [ ] 9.1.4. Test localStorage utilities.
-- [ ] 9.1.5. Test API error handling.
+- [x] 9.1.1. Test weather data normalization.
+- [x] 9.1.2. Test daily average calculations.
+- [x] 9.1.3. Test favorites management.
+- [x] 9.1.4. Test localStorage utilities.
+- [x] 9.1.5. Test API error handling.
 
 ## 9.2. Component Testing
 
@@ -526,6 +526,13 @@ Intermediate subphase between Phase 7 and Phase 8. Completed Phase 7 tasks stay 
 - City search keeps focus in the input: Arrow Up and Arrow Down move the active suggestion, Enter selects it, and Escape hides the current list. Existing navigation tabs already move with the arrow keys. The widget-removal modal keeps Cancel and Confirm, focuses Cancel, traps Tab inside its actions, closes on Escape, and returns focus to the opener when that element is still present.
 - The favorites-limit modal keeps its existing title and message and shows only the existing OK action. Escape and backdrop click still close it. Widget removal is unchanged.
 - Keyboard navigation and modal behavior were manually verified. Automated checks were not run.
+
+## 9.1. Unit Testing
+
+- Reused `normalizeWeather.spec.ts`, `favoritesStore.spec.ts`, `settingsStore.spec.ts`, `errors.spec.ts`, and `client.spec.ts`. Daily averages, favorite add/remove, the five-city limit, and HTTP, abort, and network error mapping were already covered.
+- `currentDayForecastEntries` expectations now use the rolling 24-hour window: slots before `nowUnix` are dropped, the current instant and the exact `now + 24h` boundary stay, later slots are dropped, order stays chronological, and labels stay on the city offset. The Honolulu chart expectation was updated the same way. Daily averages were left as they were.
+- Added theme save, restore, and invalid-value coverage, and a non-JSON 429 body check that the user-facing message does not include the raw text.
+- `vitest run` on those five files: 5 files, 33 tests, all passed. Production code was not changed.
 
 ## Decisions Log
 
