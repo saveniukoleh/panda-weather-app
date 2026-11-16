@@ -64,9 +64,9 @@ Every task should be small enough to implement, inspect, and verify independentl
 
 ## Project Status
 
-The application is implemented. Phase 9 (testing and quality assurance) is complete. Phase 10 (documentation, deployment, and final submission) is in progress. The project is being prepared for the final Panda Team assessment submission.
+Implementation, testing, documentation, and deployment are complete. There is no active phase.
 
-Phase 10.1 is complete. GitHub Pages is the selected frontend host. The intended application URL is `https://saveniukoleh.com/panda-weather-app/`. Publishing that site, updating the deployed Worker allowlist, and the submission package are still open. The Cloudflare Worker is already deployed, and `OPENWEATHER_API_KEY` remains a Worker secret.
+The production application is [https://saveniukoleh.com/panda-weather-app/](https://saveniukoleh.com/panda-weather-app/). The repository is [https://github.com/saveniukoleh/panda-weather-app](https://github.com/saveniukoleh/panda-weather-app). GitHub Actions deploys the production build from `main`. The Worker is [https://panda-weather-api.oleh-saveniuk.workers.dev](https://panda-weather-api.oleh-saveniuk.workers.dev). `OPENWEATHER_API_KEY` remains a Cloudflare Worker secret and is not exposed to the browser or GitHub Actions.
 
 `docs/DEVELOPMENT_PLAN.md` is the authoritative task tracker.
 
@@ -138,7 +138,7 @@ npx wrangler secret put OPENWEATHER_API_KEY --config worker/wrangler.toml
 
 Local Wrangler reads the same name from `worker/.dev.vars`. `worker/.dev.vars.example` is a placeholder and is safe to commit only because its value is empty.
 
-`ALLOWED_ORIGINS` in `worker/wrangler.toml` is not a secret. The committed value is `https://saveniukoleh.github.io`. The Worker also allows local `http://localhost` and `http://127.0.0.1`.
+`ALLOWED_ORIGINS` in `worker/wrangler.toml` is not a secret. The committed value allows `https://saveniukoleh.github.io` and `https://saveniukoleh.com`. The Worker also allows local `http://localhost` and `http://127.0.0.1`.
 
 ### Files that must never be committed
 
@@ -181,8 +181,8 @@ The original task distinguishes mandatory requirements from optional enhancement
 
 ## Deployment
 
-GitHub Pages is the selected platform. The production application URL is `https://saveniukoleh.com/panda-weather-app/`. This repository does not contain a CNAME file. The custom domain stays on the existing user site.
+GitHub Pages hosts the production application at [https://saveniukoleh.com/panda-weather-app/](https://saveniukoleh.com/panda-weather-app/). This repository does not contain a CNAME file. The custom domain stays on the existing user site.
 
-`.github/workflows/pages.yml` builds `main` with `npm ci` and `npm run build`, then deploys `dist/` with the official GitHub Pages actions. The build reads the repository variable `VITE_API_BASE_URL` and fails if that variable is missing. Its production value is `https://panda-weather-api.oleh-saveniuk.workers.dev`. The OpenWeatherMap key is not a GitHub Actions variable.
+`.github/workflows/pages.yml` deploys the production build from `main`. It runs `npm ci` and `npm run build`, then publishes `dist/` with the official GitHub Pages actions. The build uses the repository variable `VITE_API_BASE_URL`, set to `https://panda-weather-api.oleh-saveniuk.workers.dev`. The OpenWeatherMap key is not a GitHub Actions variable.
 
-The workflow is not a completed deployment until it has run from `main` and Pages is set to GitHub Actions. `worker/wrangler.toml` now also allows `https://saveniukoleh.com`. That origin is not live until the Worker is deployed with `npm run worker:deploy`. See Phase 10.2 in `docs/DEVELOPMENT_PLAN.md`.
+The deployed Worker allows `https://saveniukoleh.github.io` and `https://saveniukoleh.com`, plus local `http://localhost` and `http://127.0.0.1`.

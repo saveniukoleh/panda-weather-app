@@ -3,10 +3,10 @@
 
 ## Project Status
 
-- Overall status: In Progress
-- Current phase: Phase 4 — Weather Widgets
-- Completed phases: 1.1, 1.2, 1.3, 2.1, 2.2, 2.3, 3.1, 3.2, 3.3, 3.4, 4.1
-- Active phase: None (Phase 4.2 not started)
+- Overall status: Complete
+- Current phase: None
+- Completed phases: 1–10
+- Active phase: None
 
 Task statuses:
 - [ ] Not started
@@ -357,11 +357,11 @@ Intermediate subphase between Phase 7 and Phase 8. Completed Phase 7 tasks stay 
 
 ## 10.3. Final Submission
 
-- [ ] 10.3.1. Verify GitHub repository.
-- [ ] 10.3.2. Verify deployed application.
-- [ ] 10.3.3. Prepare repository URL.
-- [ ] 10.3.4. Prepare deployment URL.
-- [ ] 10.3.5. Prepare final submission message.
+- [x] 10.3.1. Verify GitHub repository.
+- [x] 10.3.2. Verify deployed application.
+- [x] 10.3.3. Prepare repository URL.
+- [x] 10.3.4. Prepare deployment URL.
+- [x] 10.3.5. Prepare final submission message.
 
 ---
 
@@ -561,18 +561,26 @@ Intermediate subphase between Phase 7 and Phase 8. Completed Phase 7 tasks stay 
 ## 10.1. Project Documentation
 
 - README setup, environment variables, API limitations, additional functionality, and project status now match the implemented app and `docs/API_INTEGRATION.md`.
-- Phase 9 remains complete. Phase 10.2 and Phase 10.3 remain open. No application or Worker code was changed.
+- Phase 9 was complete. Phase 10.2 and Phase 10.3 were still open at the end of this documentation pass. No application or Worker code was changed.
 
 ## 10.2. Deployment
 
-- Platform: GitHub Pages for `saveniukoleh/panda-weather-app`, served at `https://saveniukoleh.com/panda-weather-app/` through the existing user-site domain. No CNAME file is added to this repository.
-- `.github/workflows/pages.yml` builds `main` with Node.js 20.18.2, `npm ci`, and `npm run build`. It reads the repository variable `VITE_API_BASE_URL` and fails when that variable is empty. The production value is `https://panda-weather-api.oleh-saveniuk.workers.dev`. It uploads `dist/` and deploys with the official Pages actions. The workflow has not run, and the repository variable is not configured from this environment.
+- Platform: GitHub Pages for `saveniukoleh/panda-weather-app`, served at `https://saveniukoleh.com/panda-weather-app/` through the existing user-site domain. This repository has no CNAME file.
+- `.github/workflows/pages.yml` builds `main` with Node.js 20.18.2, `npm ci`, and `npm run build`. The GitHub Actions repository variable `VITE_API_BASE_URL` is `https://panda-weather-api.oleh-saveniuk.workers.dev`. The workflow published `dist/`, and the GitHub Pages deployment succeeded.
 - Vite production `base` is `/panda-weather-app/`. Development mode stays `/`.
-- `worker/wrangler.toml` `ALLOWED_ORIGINS` now includes `https://saveniukoleh.com` beside `https://saveniukoleh.github.io`. Localhost behavior is unchanged. The Worker was not deployed.
+- `worker/wrangler.toml` `ALLOWED_ORIGINS` includes `https://saveniukoleh.com` beside `https://saveniukoleh.github.io`. Localhost behavior is unchanged. The updated Worker is deployed.
 - One production build succeeded. `dist/index.html` references `/panda-weather-app/assets/`. The bundle contains the Worker URL and does not contain `appid` or `api.openweathermap.org`.
-- The deployed Worker accepts `Origin: https://saveniukoleh.github.io` on `GET /weather` (HTTP 200, `Access-Control-Allow-Origin` echoes that origin, no `appid` in the body). `Origin: https://saveniukoleh.com` is still HTTP 403 `invalid_request` until `npm run worker:deploy`.
-- Production responsive checks at the deployed URL remain manual. Phase 9.4 viewport checks are unchanged.
-- 10.2.2, 10.2.3, 10.2.4, and 10.2.6 stay open. Phase 10.3 was not changed.
+- The production application loads. Production API requests work with the configured Worker URL. `OPENWEATHER_API_KEY` remains a Worker secret and is not a GitHub Actions variable.
+- Responsive behavior was manually verified on desktop and mobile.
+- All Phase 10.2 tasks are complete.
+
+## 10.3. Final Submission
+
+- `main` matches `origin/main` for `saveniukoleh/panda-weather-app`. The Pages workflow and deployment commits are in that history.
+- The deployed application at `https://saveniukoleh.com/panda-weather-app/` was confirmed to load, to call the Worker, and to behave correctly on desktop and mobile.
+- Repository URL: `https://github.com/saveniukoleh/panda-weather-app`
+- Deployment URL: `https://saveniukoleh.com/panda-weather-app/`
+- This update is documentation only. No application or Worker code was changed.
 
 ## Decisions Log
 
@@ -584,7 +592,7 @@ Intermediate subphase between Phase 7 and Phase 8. Completed Phase 7 tasks stay 
 
 ## Issues and Risks
 
-- The Cloudflare Worker is deployed and `OPENWEATHER_API_KEY` is configured as a Worker secret. `https://saveniukoleh.com` is in `worker/wrangler.toml` but is not allowed by the deployed Worker until `npm run worker:deploy`.
+- The Cloudflare Worker is deployed. `OPENWEATHER_API_KEY` is a Worker secret. The deployed allowlist includes `https://saveniukoleh.github.io` and `https://saveniukoleh.com`.
 - A caller that spoofs `Origin` can still use the three allowlisted routes. Add Cloudflare rate limiting before relying on the provider quota.
 - Hourly forecast data is not available. `GET /forecast` proxies the 5-day / 3-hour forecast. Current conditions use `GET /weather`.
 - The local `.env` may still contain the retired frontend key variable. Remove that variable and set `VITE_API_BASE_URL` locally. Do not commit `.env`.
