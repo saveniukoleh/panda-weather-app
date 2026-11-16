@@ -281,11 +281,11 @@ Intermediate subphase between Phase 7 and Phase 8. Completed Phase 7 tasks stay 
 - [x] 8.2.1. Implement desktop layout.
 - [x] 8.2.2. Implement tablet layout.
 - [x] 8.2.3. Implement mobile layout.
-- [ ] 8.2.4. Verify 1200px viewport.
-- [ ] 8.2.5. Verify 768px viewport.
-- [ ] 8.2.6. Verify 360px viewport.
+- [x] 8.2.4. Verify 1200px viewport.
+- [x] 8.2.5. Verify 768px viewport.
+- [x] 8.2.6. Verify 360px viewport.
 - [x] 8.2.7. Fix horizontal overflow.
-- [ ] 8.2.8. Verify chart responsiveness.
+- [x] 8.2.8. Verify chart responsiveness.
 
 ## 8.3. Interaction Polish
 
