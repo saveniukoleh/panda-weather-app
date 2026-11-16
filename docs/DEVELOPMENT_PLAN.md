@@ -309,12 +309,12 @@ Intermediate subphase between Phase 7 and Phase 8. Completed Phase 7 tasks stay 
 
 ## 9.2. Component Testing
 
-- [ ] 9.2.1. Test WeatherWidget.
-- [ ] 9.2.2. Test city autocomplete.
-- [ ] 9.2.3. Test widget addition and removal.
-- [ ] 9.2.4. Test favorites interface.
-- [ ] 9.2.5. Test confirmation modals.
-- [ ] 9.2.6. Test localization switching.
+- [x] 9.2.1. Test WeatherWidget.
+- [x] 9.2.2. Test city autocomplete.
+- [x] 9.2.3. Test widget addition and removal.
+- [x] 9.2.4. Test favorites interface.
+- [x] 9.2.5. Test confirmation modals.
+- [x] 9.2.6. Test localization switching.
 
 ## 9.3. Integration Testing
 
@@ -533,6 +533,13 @@ Intermediate subphase between Phase 7 and Phase 8. Completed Phase 7 tasks stay 
 - `currentDayForecastEntries` expectations now use the rolling 24-hour window: slots before `nowUnix` are dropped, the current instant and the exact `now + 24h` boundary stay, later slots are dropped, order stays chronological, and labels stay on the city offset. The Honolulu chart expectation was updated the same way. Daily averages were left as they were.
 - Added theme save, restore, and invalid-value coverage, and a non-JSON 429 body check that the user-facing message does not include the raw text.
 - `vitest run` on those five files: 5 files, 33 tests, all passed. Production code was not changed.
+
+## 9.2. Component Testing
+
+- Reused `WeatherWidget.spec.ts`, `WeatherWidget.favorites.spec.ts`, `WeatherWidget.forecastRange.spec.ts`, `FavoritesView.spec.ts`, `ConfirmModal.spec.ts`, and `App.spec.ts`. Those already covered widget loading, errors, cancellation, forecast range, favorites, and the basic confirm and cancel actions.
+- Unique search ids are now checked with both widgets mounted in one application. The short-range label expectation is `24 Hours`. The shell title expectation is `Panda Weather`, and the language test switches back to English.
+- Added `CitySearch.spec.ts` and `WeatherView.spec.ts`. City search covers suggestions, query and select events, keyboard navigation, Escape, and loading and error text. The dashboard covers add, cancel removal, confirmed removal, and the five-widget limit. The modal tests cover `hideCancel`, an inside click, focus trap, and focus return.
+- `vitest run` on the eight component files: 8 files, 32 tests, all passed. Production code was not changed.
 
 ## Decisions Log
 

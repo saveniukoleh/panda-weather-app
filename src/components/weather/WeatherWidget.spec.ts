@@ -1,4 +1,4 @@
-import { nextTick } from 'vue';
+import { defineComponent, h, nextTick } from 'vue';
 import { flushPromises, mount, type VueWrapper } from '@vue/test-utils';
 import { createPinia, setActivePinia } from 'pinia';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -104,16 +104,19 @@ describe('WeatherWidget', () => {
   });
 
   it('gives an omitted id a unique search control id', () => {
-    const first = mount(WeatherWidget);
-    const second = mount(WeatherWidget);
+    const parent = defineComponent({
+      components: { WeatherWidget },
+      setup() {
+        return () => h('div', [h(WeatherWidget), h(WeatherWidget)]);
+      },
+    });
+    const wrapper = mount(parent);
+    const [firstId, secondId] = wrapper.findAll('input').map((input) => input.attributes('id'));
 
-    const firstId = first.get('input').attributes('id');
-    const secondId = second.get('input').attributes('id');
     expect(firstId).toBeTruthy();
     expect(secondId).toBeTruthy();
     expect(firstId).not.toBe(secondId);
-    first.unmount();
-    second.unmount();
+    wrapper.unmount();
   });
 
   it('loads a locked city and follows locale, location, and clear changes', async () => {

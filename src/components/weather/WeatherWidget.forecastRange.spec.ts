@@ -97,7 +97,7 @@ describe('WeatherWidget forecast range', () => {
     await nextTick();
 
     expect(load).toHaveBeenCalledTimes(1);
-    expect(wrapper.get('.forecast-range button[aria-pressed="true"]').text()).toBe('Day');
+    expect(wrapper.get('.forecast-range button[aria-pressed="true"]').text()).toBe('24 Hours');
     expect(wrapper.text()).toContain('clear sky');
     expect(wrapper.text()).not.toContain('2026-01-16');
     expect(wrapper.getComponent(TemperatureChart).props('points')).toEqual(
@@ -134,7 +134,7 @@ describe('WeatherWidget forecast range', () => {
     await nextTick();
     await second.get('.forecast-range button[aria-pressed="false"]').trigger('click');
 
-    expect(first.get('.forecast-range button[aria-pressed="true"]').text()).toBe('Day');
+    expect(first.get('.forecast-range button[aria-pressed="true"]').text()).toBe('24 Hours');
     expect(first.text()).not.toContain('2026-02-02');
     expect(second.get('.forecast-range button[aria-pressed="true"]').text()).toBe('5 Days');
     expect(second.text()).toContain('2026-02-02');
