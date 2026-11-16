@@ -349,11 +349,11 @@ Intermediate subphase between Phase 7 and Phase 8. Completed Phase 7 tasks stay 
 ## 10.2. Deployment
 
 - [x] 10.2.1. Select deployment platform.
-- [ ] 10.2.2. Configure production environment variables.
-- [ ] 10.2.3. Deploy the application.
-- [ ] 10.2.4. Verify production API requests.
+- [x] 10.2.2. Configure production environment variables.
+- [x] 10.2.3. Deploy the application.
+- [x] 10.2.4. Verify production API requests.
 - [x] 10.2.5. Verify production build.
-- [ ] 10.2.6. Verify responsive behavior in production.
+- [x] 10.2.6. Verify responsive behavior in production.
 
 ## 10.3. Final Submission
 
