@@ -66,7 +66,7 @@ Every task should be small enough to implement, inspect, and verify independentl
 
 The application is implemented. Phase 9 (testing and quality assurance) is complete. Phase 10 (documentation, deployment, and final submission) is in progress. The project is being prepared for the final Panda Team assessment submission.
 
-Phase 10.1 (this README) is the current documentation update. Deployment of the public frontend and the submission package remain open in Phase 10.2 and Phase 10.3. The Cloudflare Worker is already deployed, and `OPENWEATHER_API_KEY` is configured as a Worker secret. No deployment URL is recorded in this README.
+Phase 10.1 is complete. GitHub Pages is the selected frontend host. The intended application URL is `https://saveniukoleh.com/panda-weather-app/`. Publishing that site, updating the deployed Worker allowlist, and the submission package are still open. The Cloudflare Worker is already deployed, and `OPENWEATHER_API_KEY` remains a Worker secret.
 
 `docs/DEVELOPMENT_PLAN.md` is the authoritative task tracker.
 
@@ -125,7 +125,7 @@ The browser never receives the OpenWeatherMap API key. Do not put real keys in s
 
 - It must not contain an OpenWeatherMap API key.
 - Local development with `npm run worker:dev` uses `http://127.0.0.1:8787`.
-- A production build must use the deployed Worker URL, and that URL must be `https`. The production build rejects an `http` base URL and rejects any `openweathermap.org` host.
+- Production uses `https://panda-weather-api.oleh-saveniuk.workers.dev`. The production build rejects an `http` base URL and rejects any `openweathermap.org` host.
 - `.env.example` ships the variable empty. Configure a real local value only in `.env`.
 
 ### Worker
@@ -181,6 +181,8 @@ The original task distinguishes mandatory requirements from optional enhancement
 
 ## Deployment
 
-The public frontend deployment and the final submission URLs are still open. See Phase 10.2 and Phase 10.3 in `docs/DEVELOPMENT_PLAN.md`.
+GitHub Pages is the selected platform. The production application URL is `https://saveniukoleh.com/panda-weather-app/`. This repository does not contain a CNAME file. The custom domain stays on the existing user site.
 
-`npm run worker:deploy` runs `wrangler deploy --config worker/wrangler.toml`. Production frontend builds need `VITE_API_BASE_URL` set to that deployed `https` Worker URL. The repository URL and the deployed application URL are the final assessment deliverables once those steps are done.
+`.github/workflows/pages.yml` builds `main` with `npm ci` and `npm run build`, then deploys `dist/` with the official GitHub Pages actions. The build reads the repository variable `VITE_API_BASE_URL` and fails if that variable is missing. Its production value is `https://panda-weather-api.oleh-saveniuk.workers.dev`. The OpenWeatherMap key is not a GitHub Actions variable.
+
+The workflow is not a completed deployment until it has run from `main` and Pages is set to GitHub Actions. `worker/wrangler.toml` now also allows `https://saveniukoleh.com`. That origin is not live until the Worker is deployed with `npm run worker:deploy`. See Phase 10.2 in `docs/DEVELOPMENT_PLAN.md`.

@@ -348,11 +348,11 @@ Intermediate subphase between Phase 7 and Phase 8. Completed Phase 7 tasks stay 
 
 ## 10.2. Deployment
 
-- [ ] 10.2.1. Select deployment platform.
+- [x] 10.2.1. Select deployment platform.
 - [ ] 10.2.2. Configure production environment variables.
 - [ ] 10.2.3. Deploy the application.
 - [ ] 10.2.4. Verify production API requests.
-- [ ] 10.2.5. Verify production build.
+- [x] 10.2.5. Verify production build.
 - [ ] 10.2.6. Verify responsive behavior in production.
 
 ## 10.3. Final Submission
@@ -563,6 +563,17 @@ Intermediate subphase between Phase 7 and Phase 8. Completed Phase 7 tasks stay 
 - README setup, environment variables, API limitations, additional functionality, and project status now match the implemented app and `docs/API_INTEGRATION.md`.
 - Phase 9 remains complete. Phase 10.2 and Phase 10.3 remain open. No application or Worker code was changed.
 
+## 10.2. Deployment
+
+- Platform: GitHub Pages for `saveniukoleh/panda-weather-app`, served at `https://saveniukoleh.com/panda-weather-app/` through the existing user-site domain. No CNAME file is added to this repository.
+- `.github/workflows/pages.yml` builds `main` with Node.js 20.18.2, `npm ci`, and `npm run build`. It reads the repository variable `VITE_API_BASE_URL` and fails when that variable is empty. The production value is `https://panda-weather-api.oleh-saveniuk.workers.dev`. It uploads `dist/` and deploys with the official Pages actions. The workflow has not run, and the repository variable is not configured from this environment.
+- Vite production `base` is `/panda-weather-app/`. Development mode stays `/`.
+- `worker/wrangler.toml` `ALLOWED_ORIGINS` now includes `https://saveniukoleh.com` beside `https://saveniukoleh.github.io`. Localhost behavior is unchanged. The Worker was not deployed.
+- One production build succeeded. `dist/index.html` references `/panda-weather-app/assets/`. The bundle contains the Worker URL and does not contain `appid` or `api.openweathermap.org`.
+- The deployed Worker accepts `Origin: https://saveniukoleh.github.io` on `GET /weather` (HTTP 200, `Access-Control-Allow-Origin` echoes that origin, no `appid` in the body). `Origin: https://saveniukoleh.com` is still HTTP 403 `invalid_request` until `npm run worker:deploy`.
+- Production responsive checks at the deployed URL remain manual. Phase 9.4 viewport checks are unchanged.
+- 10.2.2, 10.2.3, 10.2.4, and 10.2.6 stay open. Phase 10.3 was not changed.
+
 ## Decisions Log
 
 - Vue Router was not installed. Architecture treats routing as optional, and the current shell does not require it.
@@ -573,7 +584,7 @@ Intermediate subphase between Phase 7 and Phase 8. Completed Phase 7 tasks stay 
 
 ## Issues and Risks
 
-- The Cloudflare Worker is deployed and `OPENWEATHER_API_KEY` is configured as a Worker secret.
+- The Cloudflare Worker is deployed and `OPENWEATHER_API_KEY` is configured as a Worker secret. `https://saveniukoleh.com` is in `worker/wrangler.toml` but is not allowed by the deployed Worker until `npm run worker:deploy`.
 - A caller that spoofs `Origin` can still use the three allowlisted routes. Add Cloudflare rate limiting before relying on the provider quota.
 - Hourly forecast data is not available. `GET /forecast` proxies the 5-day / 3-hour forecast. Current conditions use `GET /weather`.
 - The local `.env` may still contain the retired frontend key variable. Remove that variable and set `VITE_API_BASE_URL` locally. Do not commit `.env`.

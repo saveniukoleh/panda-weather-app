@@ -7,4 +7,4 @@ compatibility_date = "2025-04-01"
 # Set it with: npx wrangler secret put OPENWEATHER_API_KEY --config worker/wrangler.toml
 # Local Wrangler reads worker/.dev.vars (never commit that file).
 [vars]
-ALLOWED_ORIGINS = "https://saveniukoleh.github.io"
+ALLOWED_ORIGINS = "https://saveniukoleh.github.io,https://saveniukoleh.com"
