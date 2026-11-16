@@ -318,11 +318,11 @@ Intermediate subphase between Phase 7 and Phase 8. Completed Phase 7 tasks stay 
 
 ## 9.3. Integration Testing
 
-- [ ] 9.3.1. Test city search and weather retrieval.
-- [ ] 9.3.2. Test multiple independent widgets.
-- [ ] 9.3.3. Test favorite persistence after reload.
-- [ ] 9.3.4. Test Day / 5 Days switching.
-- [ ] 9.3.5. Test API failure scenarios.
+- [x] 9.3.1. Test city search and weather retrieval.
+- [x] 9.3.2. Test multiple independent widgets.
+- [x] 9.3.3. Test favorite persistence after reload.
+- [x] 9.3.4. Test Day / 5 Days switching.
+- [x] 9.3.5. Test API failure scenarios.
 
 ## 9.4. Final Quality Checks
 
@@ -540,6 +540,12 @@ Intermediate subphase between Phase 7 and Phase 8. Completed Phase 7 tasks stay 
 - Unique search ids are now checked with both widgets mounted in one application. The short-range label expectation is `24 Hours`. The shell title expectation is `Panda Weather`, and the language test switches back to English.
 - Added `CitySearch.spec.ts` and `WeatherView.spec.ts`. City search covers suggestions, query and select events, keyboard navigation, Escape, and loading and error text. The dashboard covers add, cancel removal, confirmed removal, and the five-widget limit. The modal tests cover `hideCancel`, an inside click, focus trap, and focus return.
 - `vitest run` on the eight component files: 8 files, 32 tests, all passed. Production code was not changed.
+
+## 9.3. Integration Testing
+
+- Added `src/app.integration.spec.ts`. It mounts `App` and uses the real geocoding service, weather service, API client, validation, normalization, and favorites store. Only `fetch` is mocked, plus the chart canvas so jsdom can render chart props. The clock is fixed at `2026-01-16T02:00:00Z`.
+- The flow searches Kyiv through the worker, renders 21°C, and switches `24 Hours` and `5 Days` without another weather request. A second widget loads Lviv, survives a 429 on that city, and recovers on retry while Kyiv stays at 21°C. A favorite saved from the widget is still there after a new Pinia mount and loads the saved coordinates. Geocoding 500, a rejected `fetch`, and an invalid weather payload show the mapped messages and omit the upstream text.
+- `vitest run src/app.integration.spec.ts`: 1 file, 4 tests, all passed. Production code was not changed.
 
 ## Decisions Log
 
